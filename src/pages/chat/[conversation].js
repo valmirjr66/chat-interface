@@ -1,3 +1,4 @@
+import DateCalendarServerRequest from '@/components/Calendar';
 import Input from '@/components/Input';
 import Messages from '@/components/Messages';
 import styles from '@/styles/Home.module.css';
@@ -12,6 +13,7 @@ export default function Conversation() {
 
   const [messages, setMessages] = useState([]);
   const [waitingAnswer, setWaitingAnswer] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const fetchMessages = async () => {
     try {
@@ -60,16 +62,22 @@ export default function Conversation() {
   }
 
   return (
-    <main className={styles.app}>
-      <button className='secondary' onClick={newConversation}>Nova conversa</button>
-      <div className={styles.appContent} style={{ justifyContent: messages?.length === 0 ? 'space-around' : 'unset' }}>
-        {
-          messages?.length === 0 ?
-            <img src='/chat.png' width={300} className={styles.emptyIcon} /> :
-            <Messages messages={messages} waitingAnswer={waitingAnswer} onSendMessage={onSendMessage} />
-        }
-        <Input onSendMessage={onSendMessage} waitingAnswer={waitingAnswer} />
+    <>
+      <div style={{ position: 'fixed' }}>
+        <button onClick={() => setShowCalendar(prevState => !prevState)}>Calendar</button>
+        <DateCalendarServerRequest show={showCalendar}/>
       </div>
-    </main>
+      <main className={styles.app}>
+        <button className='secondary' onClick={newConversation}>Nova conversa</button>
+        <div className={styles.appContent} style={{ justifyContent: messages?.length === 0 ? 'space-around' : 'unset' }}>
+          {
+            messages?.length === 0 ?
+              <img src='/chat.png' width={300} className={styles.emptyIcon} /> :
+              <Messages messages={messages} waitingAnswer={waitingAnswer} onSendMessage={onSendMessage} />
+          }
+          <Input onSendMessage={onSendMessage} waitingAnswer={waitingAnswer} />
+        </div>
+      </main >
+    </>
   )
 }
