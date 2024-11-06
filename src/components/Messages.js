@@ -60,7 +60,7 @@ function Message({ id, role, content, actions }, isAnchor, onSendMessage) {
                   negative: 'cancel'
                 }[action.type];
 
-                return <button className={className} onClick={() => onSendMessage(action?.feedbackResponse)}>
+                return <button className={className} disabled={!isAnchor} onClick={() => onSendMessage(action?.feedbackResponse)}>
                   {action?.feedbackResponse}
                 </button>
               })
