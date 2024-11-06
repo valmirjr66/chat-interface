@@ -49,23 +49,43 @@ button:disabled{
 }
 
 button.primary {
-  background-color: #6363bf;
+  background-color: #55ad51;
   color: white;
   border: none;
 }
 
 button.primary:disabled{
-  background-color: #9292be;
+  background-color: #92bea0;
 }
 
 button.secondary {
-  background-color: #b56950;
+  background-color: #9f5239;
   color: white;
   border: none;
 }
 
 button.secondary:disabled{
+  background-color: #b29268;
+}
+
+button.send {
+  background-color: #6363bf;
+  color: white;
+  border: none;
+}
+
+button.send:disabled{
   background-color: #9292be;
+}
+
+button.cancel {
+  background-color: #c31c1c;
+  color: white;
+  border: none;
+}
+
+button.cancel:disabled{
+  background-color: #b67070;
 }
 
 ::-webkit-scrollbar {

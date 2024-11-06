@@ -66,7 +66,7 @@ export default function Conversation() {
         {
           messages?.length === 0 ?
             <img src='/chat.png' width={300} className={styles.emptyIcon} /> :
-            <Messages messages={messages} waitingAnswer={waitingAnswer} />
+            <Messages messages={messages} waitingAnswer={waitingAnswer} onSendMessage={onSendMessage} />
         }
         <Input onSendMessage={onSendMessage} waitingAnswer={waitingAnswer} />
       </div>

@@ -18,18 +18,18 @@ const members = {
   }
 };
 
-export default function Messages({ messages, waitingAnswer }) {
+export default function Messages({ messages, waitingAnswer, onSendMessage }) {
   const LoadingDots = () => <img src='/dots.gif' width={50} />
 
   return (
     <ul className={styles.messagesList}>
-      {messages.map((message, index) => Message(message, messages.length === index + 1))}
+      {messages.map((message, index) => Message(message, messages.length === index + 1, onSendMessage))}
       {waitingAnswer && Message({ role: 'assistant', content: <LoadingDots />, id: 'loading_msg' })}
     </ul>
   );
 }
 
-function Message({ role, content, id }, isAnchor) {
+function Message({ id, role, content, actions }, isAnchor, onSendMessage) {
   const member = role === 'user' ? members.me : members.they;
 
   const className = member.id === members.me.id ?
@@ -50,6 +50,20 @@ function Message({ role, content, id }, isAnchor) {
             {
               typeof content === 'string' ?
                 <Markdown>{content}</Markdown> : content
+            }
+          </div>
+          <div style={{ width: '100%' }}>
+            {
+              actions?.map(action => {
+                const className = {
+                  positive: 'primary',
+                  negative: 'cancel'
+                }[action.type];
+
+                return <button className={className} onClick={() => onSendMessage(action?.feedbackResponse)}>
+                  {action?.feedbackResponse}
+                </button>
+              })
             }
           </div>
         </div>
