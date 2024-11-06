@@ -1,0 +1,82 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #5c5c7d;
+}
+
+.appContent {
+  width: 100%;
+  max-width: 900px;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 16px;
+  border: 2px solid rgba(211, 211, 211, 0.5);
+  border-radius: 16px;
+  background-color: #30304c;
+}
+
+.messagesList {
+  list-style: none;
+  padding-left: 0;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.messagesMessage {
+  display: flex;
+  margin-top: 10px;
+}
+
+.messagesMessage.currentMember {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.avatar {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+}
+
+.messagesMessage > .avatar {
+  margin: 0 10px -10px;
+}
+
+.username {
+  color: lightgray;
+  font-size: 14px;
+}
+
+.messageContent > .username {
+  padding-bottom: 4px;
+}
+
+.messageContent > .text {
+  padding: 10px;
+  max-width: 400px;
+  margin: 0;
+  border-radius: 12px;
+  background-color: #45455f;
+  color: white;
+  display: inline-block;
+}
+
+.messageContent > .text > div {
+  margin-top: 6px;
+}
+
+.currentMember > .messageContent .text {
+  background-color: rgb(0, 179, 89);
+  border-top-right-radius: 0;
+  color: white;
+}
+
+.emptyIcon {
+  align-self: center;
+  filter: opacity(0.2);
+}
