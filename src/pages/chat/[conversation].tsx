@@ -1,4 +1,4 @@
-import DateCalendarServerRequest from '@/components/Calendar';
+import Calendar from '@/components/Calendar';
 import Input from '@/components/Input';
 import Messages from '@/components/Messages';
 import styles from '@/styles/Home.module.css';
@@ -65,7 +65,7 @@ export default function Conversation() {
     <>
       <div style={{ position: 'fixed' }}>
         <button onClick={() => setShowCalendar(prevState => !prevState)}>Calendar</button>
-        <DateCalendarServerRequest show={showCalendar}/>
+        <Calendar show={showCalendar}/>
       </div>
       <main className={styles.app}>
         <button className='secondary' onClick={newConversation}>Nova conversa</button>

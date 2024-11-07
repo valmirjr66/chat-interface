@@ -1,37 +1,28 @@
-import * as React from 'react';
-import dayjs, { Dayjs } from 'dayjs';
 import Badge from '@mui/material/Badge';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
+import axios from 'axios';
+import dayjs, { Dayjs } from 'dayjs';
+import { useEffect, useRef, useState } from 'react';
 
-function getRandomNumber(min: number, max: number) {
-  return Math.round(Math.random() * (max - min) + min);
-}
+function fetchApi(date: Dayjs, { signal }: { signal: AbortSignal }) {
+  return new Promise<{ daysToHighlight: number[] }>(async (resolve, reject) => {
+    const API_ADDRESS = 'http://localhost:4000/api/planning';
 
-/**
- * Mimic fetch with abort controller https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
- * ⚠️ No IE11 support
- */
-function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
-  return new Promise<{ daysToHighlight: number[] }>((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      const daysInMonth = date.daysInMonth();
-      const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
+    const { data } = await axios.get(`${API_ADDRESS}/${date.year()}/${date.month() + 1}`);
 
-      resolve({ daysToHighlight });
-    }, 500);
+    const daysToHighlight = Object.keys(data.items).map(day => Number(day))
 
-    signal.onabort = () => {
-      clearTimeout(timeout);
-      reject(new DOMException('aborted', 'AbortError'));
-    };
+    resolve({ daysToHighlight });
+
+    signal.onabort = () => { reject(new DOMException('aborted', 'AbortError')) };
   });
 }
 
-const initialValue = dayjs('2022-04-17');
+const initialValue = dayjs();
 
 function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] }) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
@@ -43,21 +34,22 @@ function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] 
     <Badge
       key={props.day.toString()}
       overlap="circular"
-      badgeContent={isSelected ? '🌚' : undefined}
+      badgeContent={isSelected && '🟢'}
     >
       <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
     </Badge>
   );
 }
 
-export default function DateCalendarServerRequest({ show }) {
-  const requestAbortController = React.useRef<AbortController | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
+export default function Calendar({ show }) {
+  const requestAbortController = useRef<AbortController | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
 
   const fetchHighlightedDays = (date: Dayjs) => {
     const controller = new AbortController();
-    fakeFetch(date, {
+
+    fetchApi(date, {
       signal: controller.signal,
     })
       .then(({ daysToHighlight }) => {
@@ -65,7 +57,6 @@ export default function DateCalendarServerRequest({ show }) {
         setIsLoading(false);
       })
       .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
         if (error.name !== 'AbortError') {
           throw error;
         }
@@ -74,9 +65,8 @@ export default function DateCalendarServerRequest({ show }) {
     requestAbortController.current = controller;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchHighlightedDays(initialValue);
-    // abort request on unmount
     return () => requestAbortController.current?.abort();
   }, []);
 
@@ -103,11 +93,7 @@ export default function DateCalendarServerRequest({ show }) {
           slots={{
             day: ServerDay,
           }}
-          slotProps={{
-            day: {
-              highlightedDays,
-            } as any,
-          }}
+          slotProps={{ day: { highlightedDays } as any }}
         />
       </LocalizationProvider>
     </div>
