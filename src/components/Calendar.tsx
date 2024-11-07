@@ -1,4 +1,5 @@
 import Badge from '@mui/material/Badge';
+import { DateView } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
@@ -41,7 +42,7 @@ function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] 
   );
 }
 
-export default function Calendar({ show }) {
+export default function Calendar({ show, loadItemsByDate }) {
   const requestAbortController = useRef<AbortController | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
@@ -82,6 +83,16 @@ export default function Calendar({ show }) {
     fetchHighlightedDays(date);
   };
 
+  const selectDate = (date: Dayjs, _, dateView: DateView) => {
+    if (dateView === 'day' && loadItemsByDate) {
+      const year = date.year()
+      const month = date.month() + 1
+      const day = date.date()
+
+      loadItemsByDate(year, month, day)
+    }
+  }
+
   return (
     <div style={{ backgroundColor: 'lightgrey', borderRadius: 20, display: show ? 'block' : 'none' }}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -90,6 +101,7 @@ export default function Calendar({ show }) {
           loading={isLoading}
           onMonthChange={handleMonthChange}
           renderLoading={() => <DayCalendarSkeleton />}
+          onChange={selectDate}
           slots={{
             day: ServerDay,
           }}
