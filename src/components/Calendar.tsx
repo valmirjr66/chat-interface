@@ -45,7 +45,7 @@ function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] 
 export default function Calendar({ show, loadItemsByDate }) {
   const requestAbortController = useRef<AbortController | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
+  const [highlightedDays, setHighlightedDays] = useState([]);
 
   const fetchHighlightedDays = (date: Dayjs) => {
     const controller = new AbortController();
