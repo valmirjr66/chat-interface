@@ -49,7 +49,7 @@ export default function Conversation() {
 
     setWaitingAnswer(true);
 
-    await axios.post(`${API_ADDRESS}/message`,
+    await axios.post(`${API_ADDRESS}/assistant/conversation/message`,
       {
         role: "user",
         content: message,
@@ -117,7 +117,7 @@ export default function Conversation() {
       </Modal>
 
       <div style={{ position: 'fixed' }}>
-        <button onClick={() => setShowCalendar(prevState => !prevState)}>Calendar</button>
+        <button onClick={() => setShowCalendar(prevState => !prevState)}>Calendário</button>
         <Calendar show={showCalendar} loadItemsByDate={loadItemsByDate} />
       </div>
       <main className={styles.app}>
