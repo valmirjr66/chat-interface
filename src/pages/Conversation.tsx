@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Messages from '../components/Messages';
+import { v4 as uuidv4 } from 'uuid';
 import Input from '../components/Input';
+import Messages from '../components/Messages';
 
 export default function Conversation() {
   const conversationId = document.location.search?.replace('?', '');
@@ -25,6 +26,12 @@ export default function Conversation() {
       setMessages([]);
     }
   };
+
+  useEffect(() => {
+    if (!document.location.pathname || document.location.pathname === '/') {
+      document.location.pathname = `/chat/${uuidv4()}`;
+    }
+  }, []);
 
   useEffect(() => {
     if (conversationId) {
@@ -60,7 +67,7 @@ export default function Conversation() {
   };
 
   const newConversation = () => {
-    document.location.href = '';
+    document.location.pathname = '/';
   };
 
   return (

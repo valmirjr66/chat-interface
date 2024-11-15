@@ -2,7 +2,7 @@ import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material';
 import { ptBR } from '@mui/x-date-pickers/locales';
 import './App.css';
-import Conversation from './pages/conversation';
+import Conversation from './pages/Conversation';
 
 const theme = createTheme(
   {
