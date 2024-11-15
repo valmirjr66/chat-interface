@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: false
-      REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
+      REACT_APP_API_URL: https://yoko-883258931528.southamerica-east1.run.app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
