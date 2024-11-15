@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Input from '../components/Input';
 import Messages from '../components/Messages';
+import chatImg from '../imgs/chat.png';
 
 export default function Conversation() {
   const conversationId = document.location.search?.replace('?', '');
@@ -79,7 +80,7 @@ export default function Conversation() {
       >
         {
           messages?.length === 0 ?
-            <img src='/chat.png' width={300} className='emptyIcon' /> :
+            <img src={chatImg} width={300} className='emptyIcon' alt='Empty chat' /> :
             <Messages messages={messages} waitingAnswer={waitingAnswer} onSendMessage={onSendMessage} />
         }
         <Input onSendMessage={onSendMessage} waitingAnswer={waitingAnswer} />

@@ -1,4 +1,5 @@
 import Markdown from "react-markdown";
+import dotsGif from '../imgs/dots.gif';
 
 const members = {
   me: {
@@ -24,7 +25,7 @@ export default function Messages(props: {
 }) {
   const { messages, waitingAnswer, onSendMessage } = props;
 
-  const LoadingDots = () => <img src="/dots.gif" width={50} alt="Loading" />;
+  const LoadingDots = () => <img src={dotsGif} width={50} alt="Loading" />;
 
   return (
     <ul className='messagesList'>
