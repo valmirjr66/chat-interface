@@ -20,8 +20,9 @@ export default function Conversation() {
 
   const fetchMessages = async() => {
     try {
-      const { data } =
-        await axios.get(`${API_ADDRESS}/assistant/conversation/${conversationId}`);
+      const MESSAGES_ENDPOINT =
+        `${API_ADDRESS}/assistant/conversation/${conversationId}`;
+      const { data } = await axios.get(MESSAGES_ENDPOINT);
       setMessages(data.messages);
     } catch {
       setMessages([]);
@@ -71,17 +72,27 @@ export default function Conversation() {
     document.location.pathname = '/';
   };
 
+  const justifyContent = messages?.length === 0 ? 'space-around' : 'unset';
+
   return (
     <main className='app'>
-      <button className='secondary' onClick={newConversation}>Nova conversa</button>
-      <div
-        className='appContent'
-        style={{ justifyContent: messages?.length === 0 ? 'space-around' : 'unset' }}
-      >
+      <button className='secondary' onClick={newConversation}>
+        Nova conversa
+      </button>
+      <div className='appContent' style={{ justifyContent }}>
         {
           messages?.length === 0 ?
-            <img src={chatImg} width={300} className='emptyIcon' alt='Empty chat' /> :
-            <Messages messages={messages} waitingAnswer={waitingAnswer} onSendMessage={onSendMessage} />
+            <img
+              src={chatImg}
+              width={300}
+              className='emptyIcon'
+              alt='Empty chat'
+            /> :
+            <Messages
+              messages={messages}
+              waitingAnswer={waitingAnswer}
+              onSendMessage={onSendMessage}
+            />
         }
         <Input onSendMessage={onSendMessage} waitingAnswer={waitingAnswer} />
       </div>
