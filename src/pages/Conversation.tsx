@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Input from '../components/Input';
 import Messages from '../components/Messages';
@@ -19,7 +19,7 @@ export default function Conversation() {
   }[]);
   const [waitingAnswer, setWaitingAnswer] = useState(false);
 
-  const fetchMessages = async() => {
+  const fetchMessages = useCallback(async() => {
     try {
       const MESSAGES_ENDPOINT =
         `${API_ADDRESS}/assistant/conversation/${conversationId}`;
@@ -28,14 +28,14 @@ export default function Conversation() {
     } catch {
       setMessages([]);
     }
-  };
+  }, [API_ADDRESS, conversationId]);
 
   useEffect(() => {
     if (conversationId) {
       localStorage.setItem('conversationId', conversationId);
       fetchMessages();
     }
-  }, [conversationId]);
+  }, [conversationId, fetchMessages]);
 
   useEffect(() => {
     const element = document.getElementById("anchor");
