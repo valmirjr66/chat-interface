@@ -6,7 +6,8 @@ import Messages from '../components/Messages';
 import chatImg from '../imgs/chat.png';
 
 export default function Conversation() {
-  const conversationId = document.location.search?.replace('?', '');
+  const [conversationId, setConversationId] =
+    useState<string>(() => localStorage.getItem('conversationId') || uuidv4());
 
   const API_ADDRESS = process.env.REACT_APP_API_URL;
 
@@ -30,13 +31,8 @@ export default function Conversation() {
   };
 
   useEffect(() => {
-    if (!document.location.pathname || document.location.pathname === '/') {
-      document.location.pathname = `/chat/${uuidv4()}`;
-    }
-  }, []);
-
-  useEffect(() => {
     if (conversationId) {
+      localStorage.setItem('conversationId', conversationId);
       fetchMessages();
     }
   }, [conversationId]);
@@ -69,7 +65,7 @@ export default function Conversation() {
   };
 
   const newConversation = () => {
-    document.location.pathname = '/';
+    setConversationId(uuidv4());
   };
 
   const justifyContent = messages?.length === 0 ? 'space-around' : 'unset';
