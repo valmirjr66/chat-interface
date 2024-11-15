@@ -7,7 +7,7 @@ import Messages from '../components/Messages';
 export default function Conversation() {
   const conversationId = document.location.search?.replace('?', '');
 
-  const API_ADDRESS = 'http://localhost:4000/api';
+  const API_ADDRESS = process.env.REACT_APP_API_URL;
 
   const [messages, setMessages] = useState([] as {
     id: string,
