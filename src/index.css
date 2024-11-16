@@ -37,6 +37,10 @@ button {
   margin: 14px;
   cursor: pointer;
   transition: transform 0.5s ease;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
 }
 
 button:hover:not(:disabled) {

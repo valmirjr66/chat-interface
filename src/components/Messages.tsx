@@ -50,11 +50,17 @@ function Message(
     role: string;
     content: React.ReactNode;
     actions?: { type: string; feedbackResponse: string }[];
+    annotations?: {
+      text: string,
+      start_index: number,
+      end_index: number,
+      file_citation: { file_id: string }
+    }[]
   },
   isAnchor?: boolean,
-  onSendMessage?: (msg:string) => void
+  onSendMessage?: (msg: string) => void
 ) {
-  const { id, role, content, actions } = props;
+  const { id, role, content, actions, annotations } = props;
   const member = role === "user" ? members.me : members.they;
 
   const className =
@@ -96,6 +102,11 @@ function Message(
               );
             })}
           </div>
+          {
+            annotations?.map(annotation => {
+              return <button style={{ width: 200 }}>{annotation.text}</button>;
+            })
+          }
         </div>
       </li>
       {isAnchor && <div id="anchor" />}
