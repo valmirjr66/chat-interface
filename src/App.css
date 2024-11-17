@@ -112,3 +112,14 @@
 .conversationWrapper {
   width: 70%;
 }
+
+.recentSearchWrapper {
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.recentSearchWrapper:hover {
+  text-decoration: underline;
+}
