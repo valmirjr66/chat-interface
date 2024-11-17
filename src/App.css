@@ -4,20 +4,20 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #5c5c7d;
+  background-color: #6b6b6b;
 }
 
 .appContent {
   width: 100%;
-  max-width: 900px;
-  height: 80%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
   padding: 16px;
   border: 2px solid rgba(211, 211, 211, 0.5);
-  border-radius: 16px;
-  background-color: #30304c;
+  background-image: url(imgs/light-background-home.svg);
+  background-size: cover;
 }
 
 .messagesList {
@@ -25,6 +25,11 @@
   padding-left: 0;
   flex-grow: 1;
   overflow: auto;
+  background-color: #3A3A3A;
+  border: #FFF solid 1px;
+  border-radius: 20px;
+  height: 60vh;
+  font-family: "Overpass Mono";
 }
 
 .messagesMessage {
@@ -79,4 +84,31 @@
 .emptyIcon {
   align-self: center;
   filter: opacity(0.2);
+}
+
+.appHeader {
+  width: 100%;
+  background-color: #3A3A3A;
+  color: #FFF;
+  height: 100px;
+  border-bottom: #FFF solid 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.appNav {
+  background-color: #3A3A3A;
+  border-right: #FFF solid 1px;
+  height: calc(100vh - 100px);
+  width: 345px;
+}
+
+.appWrapper {
+  display: flex;
+  width: 100vw;
+}
+
+.conversationWrapper {
+  width: 70%;
 }

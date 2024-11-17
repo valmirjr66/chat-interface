@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import btnSearch from '../imgs/btn-search.svg';
 
 export default function Input(
   props: {
@@ -29,11 +30,11 @@ export default function Input(
           onChange={e => onChange(e)}
           value={text}
           type='text'
-          placeholder='Pressione ENTER para enviar'
+          placeholder='Ask me anything'
           autoFocus
         />
         <button className='send' disabled={text?.length === 0 || waitingAnswer}>
-          Enviar
+          <img src={btnSearch} width={50} alt='Search' />
         </button>
       </form>
     </div>
