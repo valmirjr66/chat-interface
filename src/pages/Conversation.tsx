@@ -198,7 +198,7 @@ export default function Conversation() {
                 marginBottom: 20,
                 border: "1px solid white",
                 padding: "15px 0px",
-                borderRadius: 30,
+                borderRadius: 15,
               }}
             >
               Recent Searches
@@ -217,7 +217,13 @@ export default function Conversation() {
                       setConversationId(item.id);
                       localStorage.setItem("conversationId", item.id);
                     }}
-                    style={{ marginTop: index === 0 ? 0 : 20 }}
+                    style={{
+                      marginTop: index === 0 ? 0 : 20,
+                      filter:
+                        item.id === conversationId
+                          ? "invert(76%) sepia(16%) saturate(7326%) hue-rotate(62deg) brightness(282%) contrast(93%)"
+                          : "unset",
+                    }}
                     className="recentSearchWrapper"
                   >
                     <img
@@ -233,7 +239,7 @@ export default function Conversation() {
                     width={20}
                     alt="Remove"
                     className="closeIcon"
-                    style={{ marginRight: 10, cursor: "pointer" }}
+                    style={{ margin: "0px 10px", cursor: "pointer" }}
                     onClick={() => removeRecentSearch(item.id)}
                   />
                 </div>
@@ -246,13 +252,13 @@ export default function Conversation() {
             className="conversationWrapper"
             style={{ width: isMobile ? "95%" : "70%" }}
           >
-            {(
+            {
               <Messages
                 messages={messages?.length === 0 ? [] : messages}
                 waitingAnswer={waitingAnswer}
                 onSendMessage={onSendMessage}
               />
-            )}
+            }
             <Input
               onSendMessage={onSendMessage}
               waitingAnswer={waitingAnswer}
