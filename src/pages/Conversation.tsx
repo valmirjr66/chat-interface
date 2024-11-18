@@ -7,6 +7,7 @@ import Messages from "../components/Messages";
 import chatImg from "../imgs/chat.png";
 import menuHamburger from "../imgs/Hamburger_icon.svg";
 import chatBubble from "../imgs/ic-chatbuble.svg";
+import closeIcon from "../imgs/close.svg";
 import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 
@@ -46,7 +47,10 @@ export default function Conversation() {
             (item) => item.id === conversationId
           ) === -1
         ) {
-          newConversationHistory.push({ id: conversationId, title: data.title });
+          newConversationHistory.push({
+            id: conversationId,
+            title: data.title,
+          });
           localStorage.setItem(
             "conversationHistory",
             JSON.stringify(newConversationHistory)
@@ -101,6 +105,34 @@ export default function Conversation() {
     setConversationId(uuidv4());
   };
 
+  function removeRecentSearch(id: string): void {
+    const strCurrentConversationHistory = localStorage.getItem(
+      "conversationHistory"
+    );
+
+    const newConversationHistory =
+      strCurrentConversationHistory &&
+      (JSON.parse(strCurrentConversationHistory) as {
+        id: string;
+        title: string;
+      }[]);
+
+    const filteredHistory =
+      (newConversationHistory &&
+        newConversationHistory.filter((item) => item.id !== id)) ||
+      [];
+
+    setConversationHistory(filteredHistory);
+    localStorage.setItem(
+      "conversationHistory",
+      JSON.stringify(filteredHistory)
+    );
+
+    if (id === conversationId) {
+      setConversationId(uuidv4());
+    }
+  }
+
   return (
     <main className="app">
       <header
@@ -142,7 +174,7 @@ export default function Conversation() {
             <button
               className="secondary"
               onClick={newConversation}
-              style={{ width: "100%" }}
+              style={{ width: "100%", borderRadius: 30 }}
             >
               Create new chat
               <img src={eyesAdd} alt="New chat" width={40} />
@@ -164,27 +196,46 @@ export default function Conversation() {
                 display: "flex",
                 justifyContent: "center",
                 marginBottom: 20,
+                border: "1px solid white",
+                padding: "15px 0px",
+                borderRadius: 30,
               }}
             >
-              Recent searches
+              Recent Searches
             </div>
             <div style={{ borderLeft: "1px solid white" }}>
               {conversationHistory.reverse().map((item, index) => (
                 <div
-                  onClick={() => {
-                    setConversationId(item.id);
-                    localStorage.setItem("conversationId", item.id);
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}
-                  style={{ marginTop: index === 0 ? 0 : 20 }}
-                  className="recentSearchWrapper"
                 >
+                  <div
+                    onClick={() => {
+                      setConversationId(item.id);
+                      localStorage.setItem("conversationId", item.id);
+                    }}
+                    style={{ marginTop: index === 0 ? 0 : 20 }}
+                    className="recentSearchWrapper"
+                  >
+                    <img
+                      src={chatBubble}
+                      width={20}
+                      alt="Chat bubble"
+                      style={{ marginRight: 10 }}
+                    />
+                    {item.title}
+                  </div>
                   <img
-                    src={chatBubble}
+                    src={closeIcon}
                     width={20}
-                    alt="Chat bubble"
-                    style={{ marginRight: 10 }}
+                    alt="Remove"
+                    className="closeIcon"
+                    style={{ marginRight: 10, cursor: "pointer" }}
+                    onClick={() => removeRecentSearch(item.id)}
                   />
-                  {item.title}
                 </div>
               )) || undefined}
             </div>

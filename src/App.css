@@ -28,7 +28,6 @@
   border: rgba(255, 255, 255, 0.8) solid 1px;
   border-radius: 20px;
   height: 60vh;
-  font-family: "Overpass Mono";
 }
 
 .messagesMessage {
@@ -131,4 +130,12 @@
 
 .downloadFile:hover{
   text-decoration: underline;
+}
+
+.closeIcon {
+  cursor: 'pointer';
+}
+
+.closeIcon:hover {
+  filter: invert(25%) sepia(86%) saturate(6165%) hue-rotate(357deg) brightness(94%) contrast(130%);
 }
