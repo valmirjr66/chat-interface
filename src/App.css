@@ -63,7 +63,7 @@
   padding: 10px;
   margin: 0;
   border-radius: 12px;
-  background-color: #45455f;
+  background-color: #585858;
   color: white;
   display: inline-block;
 }
@@ -73,7 +73,7 @@
 }
 
 .currentMember > .messageContent .messageText {
-  background-color: rgb(0, 179, 89);
+  background-color: #57577d;
   border-top-right-radius: 0;
   color: white;
 }

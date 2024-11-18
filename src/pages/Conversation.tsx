@@ -4,10 +4,9 @@ import { isMobile } from "react-device-detect";
 import { v4 as uuidv4 } from "uuid";
 import Input from "../components/Input";
 import Messages from "../components/Messages";
-import chatImg from "../imgs/chat.png";
+import closeIcon from "../imgs/close.svg";
 import menuHamburger from "../imgs/Hamburger_icon.svg";
 import chatBubble from "../imgs/ic-chatbuble.svg";
-import closeIcon from "../imgs/close.svg";
 import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 
@@ -203,48 +202,54 @@ export default function Conversation() {
             >
               Recent Searches
             </div>
-            <div style={{ borderLeft: "1px solid white" }}>
-              {conversationHistory.reverse().map((item, index) => (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
+            {conversationHistory.length === 0 ? (
+              <div style={{ width: "100%", textAlign: "center" }}>
+                Nothing to show yet
+              </div>
+            ) : (
+              <div style={{ borderLeft: "1px solid white" }}>
+                {conversationHistory.reverse().map((item, index) => (
                   <div
-                    onClick={() => {
-                      setConversationId(item.id);
-                      localStorage.setItem("conversationId", item.id);
-                    }}
                     style={{
-                      marginTop: index === 0 ? 0 : 20,
-                      filter:
-                        item.id === conversationId
-                          ? "invert(76%) sepia(16%) saturate(7326%) hue-rotate(62deg) brightness(282%) contrast(93%)"
-                          : "unset",
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
                     }}
-                    className="recentSearchWrapper"
                   >
+                    <div
+                      onClick={() => {
+                        setConversationId(item.id);
+                        localStorage.setItem("conversationId", item.id);
+                      }}
+                      style={{
+                        marginTop: index === 0 ? 0 : 20,
+                        filter:
+                          item.id === conversationId
+                            ? "invert(76%) sepia(16%) saturate(7326%) hue-rotate(62deg) brightness(282%) contrast(93%)"
+                            : "unset",
+                      }}
+                      className="recentSearchWrapper"
+                    >
+                      <img
+                        src={chatBubble}
+                        width={20}
+                        alt="Chat bubble"
+                        style={{ marginRight: 10 }}
+                      />
+                      {item.title}
+                    </div>
                     <img
-                      src={chatBubble}
+                      src={closeIcon}
                       width={20}
-                      alt="Chat bubble"
-                      style={{ marginRight: 10 }}
+                      alt="Remove"
+                      className="closeIcon"
+                      style={{ margin: "0px 10px", cursor: "pointer" }}
+                      onClick={() => removeRecentSearch(item.id)}
                     />
-                    {item.title}
                   </div>
-                  <img
-                    src={closeIcon}
-                    width={20}
-                    alt="Remove"
-                    className="closeIcon"
-                    style={{ margin: "0px 10px", cursor: "pointer" }}
-                    onClick={() => removeRecentSearch(item.id)}
-                  />
-                </div>
-              )) || undefined}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </nav>
         <section className="appContent">
