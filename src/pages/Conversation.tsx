@@ -246,16 +246,9 @@ export default function Conversation() {
             className="conversationWrapper"
             style={{ width: isMobile ? "95%" : "70%" }}
           >
-            {messages?.length === 0 ? (
-              <img
-                src={chatImg}
-                width={300}
-                className="emptyIcon"
-                alt="Empty chat"
-              />
-            ) : (
+            {(
               <Messages
-                messages={messages}
+                messages={messages?.length === 0 ? [] : messages}
                 waitingAnswer={waitingAnswer}
                 onSendMessage={onSendMessage}
               />
