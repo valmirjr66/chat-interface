@@ -1,6 +1,16 @@
 import Markdown from "react-markdown";
 import dotsGif from "../imgs/dots.gif";
 import { isMobile } from "react-device-detect";
+import downloadIcon from "../imgs/ic-download.svg";
+
+type Annotation = {
+  text: string;
+  start_index: number;
+  end_index: number;
+  file_citation: { file_id: string };
+  displayName: string;
+  downloadURL: string;
+};
 
 const members = {
   me: {
@@ -19,8 +29,28 @@ const members = {
   },
 };
 
+function uniqueByProperty<T>(
+  array: { [key: string]: string }[],
+  property: string
+) {
+  const seen = new Set();
+  return array.filter((item) => {
+    const value = item[property];
+    if (seen.has(value)) {
+      return false;
+    }
+    seen.add(value);
+    return true;
+  }) as T[];
+}
+
 export default function Messages(props: {
-  messages: { role: string; content: React.ReactNode; id: string }[];
+  messages: {
+    role: string;
+    content: React.ReactNode;
+    id: string;
+    annotations?: Annotation[];
+  }[];
   waitingAnswer: boolean;
   onSendMessage: (msg: string) => void;
 }) {
@@ -49,17 +79,17 @@ function Message(
     role: string;
     content: React.ReactNode;
     actions?: { type: string; feedbackResponse: string }[];
-    annotations?: {
-      text: string;
-      start_index: number;
-      end_index: number;
-      file_citation: { file_id: string };
-    }[];
+    annotations?: Annotation[];
   },
   isAnchor?: boolean,
   onSendMessage?: (msg: string) => void
 ) {
   const { id, role, content, actions, annotations } = props;
+  const parsedAnnotations: Annotation[] =
+    annotations && typeof annotations === "string"
+      ? uniqueByProperty(JSON.parse(annotations), "displayName")
+      : [];
+
   const member = role === "user" ? members.me : members.they;
 
   const className =
@@ -84,7 +114,7 @@ function Message(
             style={{ maxWidth: isMobile ? "80%" : 400 }}
           >
             {typeof content === "string" ? (
-              <Markdown>{content}</Markdown>
+              <Markdown>{content.replace(/【[^】]*】/g, "")}</Markdown>
             ) : (
               content
             )}
@@ -107,9 +137,19 @@ function Message(
               );
             })}
           </div>
-          {annotations?.map((annotation) => {
-            return <button style={{ width: 200 }}>{annotation.text}</button>;
-          })}
+          {parsedAnnotations &&
+            parsedAnnotations.map((annotation) => {
+              return (
+                <a
+                  href={annotation.downloadURL}
+                  download={annotation.displayName}
+                  className="downloadFile"
+                >
+                  <img src={downloadIcon} width={20} alt="Download file" />
+                  {annotation.displayName}
+                </a>
+              );
+            })}
         </div>
       </li>
       {isAnchor && <div id="anchor" />}

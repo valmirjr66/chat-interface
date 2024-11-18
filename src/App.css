@@ -120,3 +120,15 @@
 .recentSearchWrapper:hover {
   text-decoration: underline;
 }
+
+.downloadFile {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  margin-top: 20px;
+}
+
+.downloadFile:hover{
+  text-decoration: underline;
+}

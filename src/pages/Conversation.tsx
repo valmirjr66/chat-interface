@@ -1,14 +1,14 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
 import { v4 as uuidv4 } from "uuid";
 import Input from "../components/Input";
 import Messages from "../components/Messages";
 import chatImg from "../imgs/chat.png";
-import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
-import eyesAdd from "../imgs/ic-eyes-add.svg";
-import { isMobile } from "react-device-detect";
-import chatBubble from "../imgs/ic-chatbuble.svg";
 import menuHamburger from "../imgs/Hamburger_icon.svg";
+import chatBubble from "../imgs/ic-chatbuble.svg";
+import eyesAdd from "../imgs/ic-eyes-add.svg";
+import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 
 export default function Conversation() {
   const [conversationId, setConversationId] = useState<string>(
