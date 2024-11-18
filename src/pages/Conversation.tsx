@@ -98,7 +98,6 @@ export default function Conversation() {
         <img
           src={logoTextUpperNavbar}
           alt="WITNESS LENS - Empowering People with Knowledge"
-          style={{ marginRight: isMobile ? 0 : 20 }}
           width={isMobile ? 300 : 400}
         />
       </header>
@@ -114,7 +113,7 @@ export default function Conversation() {
           <div
             style={{
               padding: "30px 20px",
-              borderBottom: "1px solid white",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.5)",
             }}
           >
             <button
@@ -148,7 +147,7 @@ export default function Conversation() {
             </div>
             <div style={{ borderLeft: "1px solid white" }}>
               {[
-                "Internet shutdown",
+                "Internet shutdown and how to deal with it",
                 "Can AI fake reality?",
                 "Video as Evidence",
                 "Internet shutdown",

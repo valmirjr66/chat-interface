@@ -74,7 +74,10 @@ function Message(
           className="avatar"
           style={{ backgroundColor: member.clientData.color }}
         />
-        <div className="messageContent">
+        <div
+          className="messageContent"
+          style={{ marginBottom: isAnchor ? 30 : 0 }}
+        >
           <div className="username">{member.clientData.username}</div>
           <div
             className="messageText"
