@@ -1,25 +1,26 @@
 import Markdown from "react-markdown";
-import dotsGif from '../imgs/dots.gif';
+import dotsGif from "../imgs/dots.gif";
+import { isMobile } from "react-device-detect";
 
 const members = {
   me: {
     id: "1",
     clientData: {
       color: "lightblue",
-      username: "Eu",
+      username: "Me",
     },
   },
   they: {
     id: "2",
     clientData: {
       color: "pink",
-      username: "Yoko",
+      username: "Witness AI",
     },
   },
 };
 
 export default function Messages(props: {
-  messages: { role: string, content: React.ReactNode, id: string }[];
+  messages: { role: string; content: React.ReactNode; id: string }[];
   waitingAnswer: boolean;
   onSendMessage: (msg: string) => void;
 }) {
@@ -28,18 +29,16 @@ export default function Messages(props: {
   const LoadingDots = () => <img src={dotsGif} width={50} alt="Loading" />;
 
   return (
-    <ul className='messagesList'>
-      {messages.map(
-        (message, index) =>
-          Message(message, messages.length === index + 1, onSendMessage)
+    <ul className="messagesList">
+      {messages.map((message, index) =>
+        Message(message, messages.length === index + 1, onSendMessage)
       )}
       {waitingAnswer &&
         Message({
           role: "assistant",
           content: <LoadingDots />,
           id: "loading_msg",
-        })
-      }
+        })}
     </ul>
   );
 }
@@ -51,11 +50,11 @@ function Message(
     content: React.ReactNode;
     actions?: { type: string; feedbackResponse: string }[];
     annotations?: {
-      text: string,
-      start_index: number,
-      end_index: number,
-      file_citation: { file_id: string }
-    }[]
+      text: string;
+      start_index: number;
+      end_index: number;
+      file_citation: { file_id: string };
+    }[];
   },
   isAnchor?: boolean,
   onSendMessage?: (msg: string) => void
@@ -65,19 +64,22 @@ function Message(
 
   const className =
     member.id === members.me.id
-      ? 'messagesMessage currentMember'
-      : 'messagesMessage';
+      ? "messagesMessage currentMember"
+      : "messagesMessage";
 
   return (
     <>
       <li key={id} className={className}>
         <span
-          className='avatar'
+          className="avatar"
           style={{ backgroundColor: member.clientData.color }}
         />
-        <div className='messageContent'>
-          <div className='username'>{member.clientData.username}</div>
-          <div className='text'>
+        <div className="messageContent">
+          <div className="username">{member.clientData.username}</div>
+          <div
+            className="messageText"
+            style={{ maxWidth: isMobile ? "80%" : 400 }}
+          >
             {typeof content === "string" ? (
               <Markdown>{content}</Markdown>
             ) : (
@@ -102,11 +104,9 @@ function Message(
               );
             })}
           </div>
-          {
-            annotations?.map(annotation => {
-              return <button style={{ width: 200 }}>{annotation.text}</button>;
-            })
-          }
+          {annotations?.map((annotation) => {
+            return <button style={{ width: 200 }}>{annotation.text}</button>;
+          })}
         </div>
       </li>
       {isAnchor && <div id="anchor" />}

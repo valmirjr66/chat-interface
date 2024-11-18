@@ -6,7 +6,9 @@ import Messages from "../components/Messages";
 import chatImg from "../imgs/chat.png";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import eyesAdd from "../imgs/ic-eyes-add.svg";
+import { isMobile } from "react-device-detect";
 import chatBubble from "../imgs/ic-chatbuble.svg";
+import menuHamburger from "../imgs/Hamburger_icon.svg";
 
 export default function Conversation() {
   const [conversationId, setConversationId] = useState<string>(
@@ -24,6 +26,7 @@ export default function Conversation() {
     }[]
   );
   const [waitingAnswer, setWaitingAnswer] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -77,16 +80,37 @@ export default function Conversation() {
 
   return (
     <main className="app">
-      <header className="appHeader">
-        <img src={eyesAdd} alt="Home" width={70} style={{ marginLeft: 20 }} />
+      <header
+        className="appHeader"
+        style={{
+          justifyContent: "center",
+        }}
+      >
+        {isMobile && (
+          <img
+            src={menuHamburger}
+            alt="Menu"
+            width={30}
+            style={{ marginRight: 20, cursor: "pointer" }}
+            onClick={() => setShowMenu((prevState) => !prevState)}
+          />
+        )}
         <img
           src={logoTextUpperNavbar}
           alt="WITNESS LENS - Empowering People with Knowledge"
-          style={{ marginRight: 20 }}
+          style={{ marginRight: isMobile ? 0 : 20 }}
+          width={isMobile ? 300 : 400}
         />
       </header>
       <div className="appWrapper">
-        <nav className="appNav">
+        <nav
+          className="appNav"
+          style={{
+            display: isMobile && !showMenu ? "none" : "block",
+            position: isMobile ? "fixed" : "relative",
+            overflowY: "auto",
+          }}
+        >
           <div
             style={{
               padding: "30px 20px",
@@ -127,6 +151,16 @@ export default function Conversation() {
                 "Internet shutdown",
                 "Can AI fake reality?",
                 "Video as Evidence",
+                "Internet shutdown",
+                "Can AI fake reality?",
+                "Video as Evidence",
+                "Internet shutdown",
+                "Can AI fake reality?",
+                "Video as Evidence",
+                "Internet shutdown",
+                "Can AI fake reality?",
+                "Video as Evidence",
+                "Último",
               ].map((item, index) => (
                 <div
                   style={{ marginTop: index === 0 ? 0 : 20 }}
@@ -145,7 +179,10 @@ export default function Conversation() {
           </div>
         </nav>
         <section className="appContent">
-          <div className="conversationWrapper">
+          <div
+            className="conversationWrapper"
+            style={{ width: isMobile ? "95%" : "70%" }}
+          >
             {messages?.length === 0 ? (
               <img
                 src={chatImg}
