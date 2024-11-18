@@ -64,11 +64,14 @@ export default function Messages(props: {
         Message(message, messages.length === index + 1, onSendMessage)
       )}
       {waitingAnswer &&
-        Message({
-          role: "assistant",
-          content: <LoadingDots />,
-          id: "loading_msg",
-        })}
+        Message(
+          {
+            role: "assistant",
+            content: <LoadingDots />,
+            id: "loading_msg",
+          },
+          true
+        )}
     </ul>
   );
 }
