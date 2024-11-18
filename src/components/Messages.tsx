@@ -148,7 +148,12 @@ function Message(
                   download={annotation.displayName}
                   className="downloadFile"
                 >
-                  <img src={downloadIcon} width={20} alt="Download file" />
+                  <img
+                    src={downloadIcon}
+                    width={20}
+                    alt="Download file"
+                    style={{ marginRight: 4 }}
+                  />
                   {annotation.displayName}
                 </a>
               );

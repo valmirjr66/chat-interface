@@ -14,6 +14,12 @@ export default function Conversation() {
   const [conversationId, setConversationId] = useState<string>(
     () => localStorage.getItem("conversationId") || uuidv4()
   );
+  const [conversationHistory, setConversationHistory] = useState<
+    { id: string; title: string }[]
+  >(() => {
+    const strConversationHistory = localStorage.getItem("conversationHistory");
+    return (strConversationHistory && JSON.parse(strConversationHistory)) || [];
+  });
 
   const API_ADDRESS = process.env.REACT_APP_API_URL;
 
@@ -32,6 +38,23 @@ export default function Conversation() {
     try {
       const MESSAGES_ENDPOINT = `${API_ADDRESS}/assistant/conversation/${conversationId}`;
       const { data } = await axios.get(MESSAGES_ENDPOINT);
+
+      if (data.messages.length === 2) {
+        const newConversationHistory = conversationHistory;
+        if (
+          newConversationHistory.findIndex(
+            (item) => item.id === conversationId
+          ) === -1
+        ) {
+          newConversationHistory.push({ id: conversationId, title: data.title });
+          localStorage.setItem(
+            "conversationHistory",
+            JSON.stringify(newConversationHistory)
+          );
+          setConversationHistory(newConversationHistory);
+        }
+      }
+
       setMessages(data.messages);
     } catch {
       setMessages([]);
@@ -146,22 +169,12 @@ export default function Conversation() {
               Recent searches
             </div>
             <div style={{ borderLeft: "1px solid white" }}>
-              {[
-                "Internet shutdown and how to deal with it",
-                "Can AI fake reality?",
-                "Video as Evidence",
-                "Internet shutdown",
-                "Can AI fake reality?",
-                "Video as Evidence",
-                "Internet shutdown",
-                "Can AI fake reality?",
-                "Video as Evidence",
-                "Internet shutdown",
-                "Can AI fake reality?",
-                "Video as Evidence",
-                "Último",
-              ].map((item, index) => (
+              {conversationHistory.reverse().map((item, index) => (
                 <div
+                  onClick={() => {
+                    setConversationId(item.id);
+                    localStorage.setItem("conversationId", item.id);
+                  }}
                   style={{ marginTop: index === 0 ? 0 : 20 }}
                   className="recentSearchWrapper"
                 >
@@ -171,9 +184,9 @@ export default function Conversation() {
                     alt="Chat bubble"
                     style={{ marginRight: 10 }}
                   />
-                  {item}
+                  {item.title}
                 </div>
-              ))}
+              )) || undefined}
             </div>
           </div>
         </nav>
