@@ -24,7 +24,7 @@ const members = {
     id: "2",
     clientData: {
       color: "pink",
-      username: "Witness AI",
+      username: "Witness Lens",
     },
   },
 };
@@ -117,7 +117,7 @@ function Message(
             style={{ maxWidth: isMobile ? "80%" : 400 }}
           >
             {typeof content === "string" ? (
-              <Markdown>{content.replace(/【[^】]*】/g, "")}</Markdown>
+              <Markdown>{content}</Markdown>
             ) : (
               content
             )}
