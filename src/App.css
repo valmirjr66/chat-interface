@@ -10,11 +10,10 @@
 .appContent {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   box-sizing: border-box;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
+  justify-content: flex-start;
+  padding: 16px 0px 16px 40px;
   background-image: url(imgs/light-background-home.svg);
   background-size: cover;
 }
@@ -26,7 +25,7 @@
   overflow: auto;
   background-color: #3a3a3a;
   border: rgba(255, 255, 255, 0.8) solid 1px;
-  border-radius: 20px;
+  border-radius: 13px;
   height: 60vh;
 }
 
@@ -105,10 +104,6 @@
   width: 100vw;
 }
 
-.conversationWrapper {
-  width: 70%;
-}
-
 .recentSearchWrapper {
   padding-left: 10px;
   display: flex;
@@ -139,4 +134,92 @@
 .closeIcon:hover {
   filter: invert(25%) sepia(86%) saturate(6165%) hue-rotate(357deg)
     brightness(94%) contrast(130%);
+}
+
+.referenceIconWrapper {
+  background-color: white;
+  border-radius: 100%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  margin-left: 15px;
+}
+
+.referenceIconWrapper:active {
+  background-color: rgb(168, 255, 157) !important;
+}
+
+.referencesWrapper {
+  display: flex;
+  width: 25%;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 60vh;
+  padding: 16px 0px;
+}
+
+.referencesHeader {
+  color: white;
+  background-color: #525252;
+  margin-left: 16px;
+  width: 100%;
+  height: 50px;
+  border-left: white solid 1px;
+  border-top: white solid 1px;
+  border-right: white solid 1px;
+  border-radius: 10px 10px 0px 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 20px;
+}
+
+.referencesBoard {
+  background-color: #3a3a3a;
+  color: #fff;
+  height: 100px;
+  width: 100%;
+  border-left: white solid 1px;
+  border-bottom: white solid 1px;
+  border-right: white solid 1px;
+  margin-left: 16px;
+  border-radius: 0px 0px 10px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  padding: 30px 20px 0px 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.referenceCard {
+  border-radius: 10px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.referenceCardContent {
+  display: flex;
+  flex-direction: column;
+  margin-left: 24px;
+}
+
+.previewImage {
+  align-self: left;
+  height: 100%;
+  border-radius: 10px;
+}
+
+.previewCaption {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.appInner {
+  display: flex;
 }

@@ -1,11 +1,14 @@
 import { useState } from "react";
 import btnSearch from "../imgs/btn-search.svg";
+import referenceIcon from "../imgs/ic-reference.svg";
+import { isMobile } from "react-device-detect";
 
 export default function Input(props: {
   onSendMessage: (msg: string) => void;
   waitingAnswer: boolean;
+  toggleReferences: () => void;
 }) {
-  const { onSendMessage, waitingAnswer } = props;
+  const { onSendMessage, waitingAnswer, toggleReferences } = props;
   const [text, setText] = useState("");
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -24,8 +27,10 @@ export default function Input(props: {
   }
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <form onSubmit={(e) => onSubmit(e)} style={{ width: "90%" }}>
+    <div
+      style={{ display: "flex", justifyContent: "flex-start" }}
+    >
+      <form onSubmit={(e) => onSubmit(e)} style={{ width: "75%" }}>
         <input
           onChange={(e) => onChange(e)}
           value={text}
@@ -38,6 +43,13 @@ export default function Input(props: {
           <img src={btnSearch} width={50} alt="Search" />
         </button>
       </form>
+      <div
+        className="referenceIconWrapper"
+        style={{ display: isMobile ? "flex" : "none" }}
+        onClick={() => toggleReferences()}
+      >
+        <img src={referenceIcon} alt="References" width={30} />
+      </div>
     </div>
   );
 }

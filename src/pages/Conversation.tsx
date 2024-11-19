@@ -9,6 +9,7 @@ import menuHamburger from "../imgs/Hamburger_icon.svg";
 import chatBubble from "../imgs/ic-chatbuble.svg";
 import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
+import webIcon from "../imgs/web-icon.svg";
 
 export default function Conversation() {
   const [conversationId, setConversationId] = useState<string>(
@@ -33,6 +34,7 @@ export default function Conversation() {
   );
   const [waitingAnswer, setWaitingAnswer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showReferences, setShowReferences] = useState(false);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -138,7 +140,7 @@ export default function Conversation() {
       <header
         className="appHeader"
         style={{
-          justifyContent: "center",
+          justifyContent: isMobile ? "space-around" : "flex-end",
         }}
       >
         {isMobile && (
@@ -153,7 +155,8 @@ export default function Conversation() {
         <img
           src={logoTextUpperNavbar}
           alt="WITNESS LENS - Empowering People with Knowledge"
-          width={isMobile ? 300 : 400}
+          width={isMobile ? 200 : 400}
+          style={{ marginRight: 30 }}
         />
       </header>
       <div className="appWrapper">
@@ -255,19 +258,63 @@ export default function Conversation() {
         </nav>
         <section className="appContent">
           <div
-            className="conversationWrapper"
-            style={{ width: isMobile ? "95%" : "70%" }}
+            style={{
+              width: isMobile ? "95%" : "90%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
           >
-            {
+            <div className="appInner">
               <Messages
                 messages={messages?.length === 0 ? [] : messages}
                 waitingAnswer={waitingAnswer}
                 onSendMessage={onSendMessage}
               />
-            }
+              <div
+                className="referencesWrapper"
+                style={{
+                  display: isMobile && !showReferences ? "none" : "flex",
+                  position: isMobile ? "fixed" : "relative",
+                  right: isMobile ? 100 : "unset",
+                }}
+              >
+                <div className="referencesHeader">References</div>
+                <div className="referencesBoard">
+                  <div style={{ height: "100%", paddingTop: 20 }}>
+                    {[
+                      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*RAI4cBXe1_zaxVykHz79oA.jpeg",
+                      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*RAI4cBXe1_zaxVykHz79oA.jpeg",
+                      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*RAI4cBXe1_zaxVykHz79oA.jpeg",
+                    ].map((item) => {
+                      return (
+                        <div className="referenceCard">
+                          <img src={webIcon} alt="Reference link" width={20} />
+                          <div className="referenceCardContent">
+                            <caption className="previewCaption">
+                              Esse é um teste que quero fazer com um texto maior
+                              glablabl
+                            </caption>
+                            <img
+                              src={item}
+                              width={150}
+                              alt="Teste"
+                              className="previewImage"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
             <Input
               onSendMessage={onSendMessage}
               waitingAnswer={waitingAnswer}
+              toggleReferences={() =>
+                setShowReferences((prevState) => !prevState)
+              }
             />
           </div>
         </section>
