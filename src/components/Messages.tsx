@@ -1,6 +1,7 @@
-import Markdown from "react-markdown";
-import dotsGif from "../imgs/dots.gif";
 import { isMobile } from "react-device-detect";
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import dotsGif from "../imgs/dots.gif";
 import downloadIcon from "../imgs/ic-download.svg";
 
 type Annotation = {
@@ -117,7 +118,7 @@ function Message(
             style={{ maxWidth: isMobile ? "80%" : 400 }}
           >
             {typeof content === "string" ? (
-              <Markdown>{content}</Markdown>
+              <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>
             ) : (
               content
             )}
@@ -141,20 +142,21 @@ function Message(
             })}
           </div>
           {parsedAnnotations &&
-            parsedAnnotations.map((annotation) => {
+            parsedAnnotations.map((annotation, index) => {
               return (
                 <a
                   href={annotation.downloadURL}
                   download={annotation.displayName}
                   className="downloadFile"
                 >
+                  {`[${index + 1}]. `}
+                  {annotation.displayName}
                   <img
                     src={downloadIcon}
                     width={20}
                     alt="Download file"
-                    style={{ marginRight: 4 }}
+                    style={{ marginLeft: 6 }}
                   />
-                  {annotation.displayName}
                 </a>
               );
             })}

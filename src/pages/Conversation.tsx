@@ -67,6 +67,7 @@ export default function Conversation() {
   useEffect(() => {
     if (conversationId) {
       localStorage.setItem("conversationId", conversationId);
+      setMessages([]);
       fetchMessages();
     }
   }, [conversationId, fetchMessages]);
