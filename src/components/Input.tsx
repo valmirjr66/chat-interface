@@ -24,8 +24,8 @@ export default function Input(props: {
   }
 
   return (
-    <div>
-      <form onSubmit={(e) => onSubmit(e)}>
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <form onSubmit={(e) => onSubmit(e)} style={{ width: "90%" }}>
         <input
           onChange={(e) => onChange(e)}
           value={text}
