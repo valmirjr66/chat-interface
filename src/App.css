@@ -198,9 +198,16 @@
 
 .referenceCard {
   border-radius: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   display: flex;
   align-items: flex-start;
+  text-decoration: none;
+  color: white;
+  padding-bottom: 10px;
+}
+
+.referenceCard:hover {
+  box-shadow: 0px 5px 0px rgba(76, 76, 76, 0.6);
 }
 
 .referenceCardContent {

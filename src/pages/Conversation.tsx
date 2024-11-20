@@ -11,15 +11,28 @@ import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import webIcon from "../imgs/web-icon.svg";
 
+type Reference = {
+  id: string;
+  url: string;
+  title: string;
+  imgURL: string;
+};
+
 export default function Conversation() {
   const [conversationId, setConversationId] = useState<string>(
     () => localStorage.getItem("conversationId") || uuidv4()
   );
+
   const [conversationHistory, setConversationHistory] = useState<
     { id: string; title: string }[]
   >(() => {
     const strConversationHistory = localStorage.getItem("conversationHistory");
     return (strConversationHistory && JSON.parse(strConversationHistory)) || [];
+  });
+
+  const [allReferences, setAllReferences] = useState<Reference[]>(() => {
+    const strAllReferences = localStorage.getItem("allReferences");
+    return (strAllReferences && JSON.parse(strAllReferences)) || [];
   });
 
   const API_ADDRESS = process.env.REACT_APP_API_URL;
@@ -35,6 +48,14 @@ export default function Conversation() {
   const [waitingAnswer, setWaitingAnswer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showReferences, setShowReferences] = useState(false);
+
+  const pushNewReference = (newReference: Reference) => {
+    setAllReferences((prevState) => {
+      const newList = [...prevState, newReference];
+      localStorage.setItem("allReferences", JSON.stringify(newList));
+      return newList;
+    });
+  };
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -282,27 +303,27 @@ export default function Conversation() {
                 <div className="referencesHeader">References</div>
                 <div className="referencesBoard">
                   <div style={{ height: "100%", paddingTop: 20 }}>
-                    {[
-                      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*RAI4cBXe1_zaxVykHz79oA.jpeg",
-                      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*RAI4cBXe1_zaxVykHz79oA.jpeg",
-                      "https://miro.medium.com/v2/resize:fit:720/format:webp/1*RAI4cBXe1_zaxVykHz79oA.jpeg",
-                    ].map((item) => {
+                    {allReferences.map((item) => {
                       return (
-                        <div className="referenceCard">
+                        <a
+                          href={item.url}
+                          className="referenceCard"
+                          target="_blank"
+                          key={item.id}
+                        >
                           <img src={webIcon} alt="Reference link" width={20} />
                           <div className="referenceCardContent">
                             <caption className="previewCaption">
-                              Esse é um teste que quero fazer com um texto maior
-                              glablabl
+                              {item.title}
                             </caption>
                             <img
-                              src={item}
+                              src={item.imgURL}
                               width={150}
                               alt="Teste"
                               className="previewImage"
                             />
                           </div>
-                        </div>
+                        </a>
                       );
                     })}
                   </div>
