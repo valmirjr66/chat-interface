@@ -213,67 +213,65 @@ export default function Conversation() {
               padding: 20,
             }}
           >
-            <div
-              style={{
-                fontWeight: "bold",
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: 20,
-                border: "1px solid white",
-                padding: "15px 0px",
-                borderRadius: 15,
-              }}
-            >
-              Recent Searches
-            </div>
-            {conversationHistory.length === 0 ? (
-              <div style={{ width: "100%", textAlign: "center" }}>
-                Nothing to show yet
-              </div>
-            ) : (
-              <div style={{ borderLeft: "1px solid white" }}>
-                {conversationHistory.reverse().map((item, index) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
+            {conversationHistory.length > 0 && (
+              <>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: 20,
+                    border: "1px solid white",
+                    padding: "15px 0px",
+                    borderRadius: 15,
+                  }}
+                >
+                  Recent Searches
+                </div>
+                <div style={{ borderLeft: "1px solid white" }}>
+                  {conversationHistory.reverse().map((item, index) => (
                     <div
-                      onClick={() => {
-                        setConversationId(item.id);
-                        localStorage.setItem("conversationId", item.id);
-                      }}
                       style={{
-                        marginTop: index === 0 ? 0 : 20,
-                        filter:
-                          item.id === conversationId
-                            ? "invert(76%) sepia(16%) saturate(7326%) hue-rotate(62deg) brightness(282%) contrast(93%)"
-                            : "unset",
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
                       }}
-                      className="recentSearchWrapper"
                     >
+                      <div
+                        onClick={() => {
+                          setConversationId(item.id);
+                          localStorage.setItem("conversationId", item.id);
+                        }}
+                        style={{
+                          marginTop: index === 0 ? 0 : 20,
+                          filter:
+                            item.id === conversationId
+                              ? "invert(76%) sepia(16%) saturate(7326%) hue-rotate(62deg) brightness(282%) contrast(93%)"
+                              : "unset",
+                        }}
+                        className="recentSearchWrapper"
+                      >
+                        <img
+                          src={chatBubble}
+                          width={20}
+                          alt="Chat bubble"
+                          style={{ marginRight: 10 }}
+                        />
+                        {item.title}
+                      </div>
                       <img
-                        src={chatBubble}
+                        src={closeIcon}
                         width={20}
-                        alt="Chat bubble"
-                        style={{ marginRight: 10 }}
+                        alt="Remove"
+                        className="closeIcon"
+                        style={{ margin: "0px 10px", cursor: "pointer" }}
+                        onClick={() => removeRecentSearch(item.id)}
                       />
-                      {item.title}
                     </div>
-                    <img
-                      src={closeIcon}
-                      width={20}
-                      alt="Remove"
-                      className="closeIcon"
-                      style={{ margin: "0px 10px", cursor: "pointer" }}
-                      onClick={() => removeRecentSearch(item.id)}
-                    />
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </nav>
