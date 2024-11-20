@@ -128,27 +128,29 @@ function Message(
             })}
           </div>
           {parsedAnnotations &&
-            parsedAnnotations.map((annotation, index) => {
-              return (
-                <a
-                  href={annotation.downloadURL}
-                  download={annotation.displayName}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="downloadFile"
-                  key={index}
-                >
-                  {`[${index + 1}]. `}
-                  {annotation.displayName}
-                  <img
-                    src={downloadIcon}
-                    width={20}
-                    alt="Download file"
-                    style={{ marginLeft: 6 }}
-                  />
-                </a>
-              );
-            })}
+            parsedAnnotations
+              .filter((item) => item.displayName)
+              .map((annotation, index) => {
+                return (
+                  <a
+                    href={annotation.downloadURL}
+                    download={annotation.displayName}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="downloadFile"
+                    key={index}
+                  >
+                    {`[${index + 1}]. `}
+                    {annotation.displayName}
+                    <img
+                      src={downloadIcon}
+                      width={20}
+                      alt="Download file"
+                      style={{ marginLeft: 6 }}
+                    />
+                  </a>
+                );
+              })}
         </div>
       </li>
       {isAnchor && <div id="anchor" />}
