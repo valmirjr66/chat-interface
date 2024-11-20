@@ -140,3 +140,14 @@ a:active {
     padding-left: 16px !important;
   }
 }
+
+::placeholder {
+  color: grey;
+  font-weight: bold;
+  opacity: 1;
+}
+
+::-ms-input-placeholder { /* Edge 12 -18 */
+  color: grey;
+  font-weight: bold;
+}
