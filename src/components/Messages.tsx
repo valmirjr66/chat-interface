@@ -30,21 +30,6 @@ const members = {
   },
 };
 
-function uniqueByProperty<T>(
-  array: { [key: string]: string }[],
-  property: string
-) {
-  const seen = new Set();
-  return array.filter((item) => {
-    const value = item[property];
-    if (seen.has(value)) {
-      return false;
-    }
-    seen.add(value);
-    return true;
-  }) as T[];
-}
-
 export default function Messages(props: {
   messages: {
     role: string;
@@ -91,7 +76,7 @@ function Message(
   const { id, role, content, actions, annotations } = props;
   const parsedAnnotations: Annotation[] =
     annotations && typeof annotations === "string"
-      ? uniqueByProperty(JSON.parse(annotations), "displayName")
+      ? JSON.parse(annotations)
       : [];
 
   const member = role === "user" ? members.me : members.they;
