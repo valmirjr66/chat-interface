@@ -13,6 +13,7 @@ import webIcon from "../imgs/web-icon.svg";
 
 type Reference = {
   id: string;
+  conversationId: string;
   url: string;
   title: string;
   imgURL: string;
@@ -301,29 +302,39 @@ export default function Conversation() {
                 <div className="referencesHeader">References</div>
                 <div className="referencesBoard">
                   <div style={{ height: "100%", paddingTop: 20 }}>
-                    {allReferences.map((item) => {
-                      return (
-                        <a
-                          href={item.url}
-                          className="referenceCard"
-                          target="_blank"
-                          key={item.id}
-                        >
-                          <img src={webIcon} alt="Reference link" width={20} />
-                          <div className="referenceCardContent">
-                            <caption className="previewCaption">
-                              {item.title}
-                            </caption>
+                    {allReferences
+                      .filter(
+                        (reference) =>
+                          reference.conversationId === conversationId
+                      )
+                      .map((item) => {
+                        return (
+                          <a
+                            href={item.url}
+                            className="referenceCard"
+                            target="_blank"
+                            key={item.id}
+                            rel="noreferrer"
+                          >
                             <img
-                              src={item.imgURL}
-                              width={150}
-                              alt="Teste"
-                              className="previewImage"
+                              src={webIcon}
+                              alt="Reference link"
+                              width={20}
                             />
-                          </div>
-                        </a>
-                      );
-                    })}
+                            <div className="referenceCardContent">
+                              <caption className="previewCaption">
+                                {item.title}
+                              </caption>
+                              <img
+                                src={item.imgURL}
+                                width={150}
+                                alt="Teste"
+                                className="previewImage"
+                              />
+                            </div>
+                          </a>
+                        );
+                      })}
                   </div>
                 </div>
               </div>
