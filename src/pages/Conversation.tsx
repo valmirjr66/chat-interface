@@ -10,6 +10,8 @@ import chatBubble from "../imgs/ic-chatbuble.svg";
 import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import webIcon from "../imgs/web-icon.svg";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type Reference = {
   id: string;
@@ -58,6 +60,20 @@ export default function Conversation() {
     });
   };
 
+  const triggerErrorToast = () => {
+    toast("Something wen't wrong, please try again 😟", {
+      position: "top-right",
+      autoClose: 10000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+      type: "error",
+    });
+  };
+
   const fetchMessages = useCallback(async () => {
     try {
       const MESSAGES_ENDPOINT = `${API_ADDRESS}/assistant/conversation/${conversationId}`;
@@ -85,6 +101,7 @@ export default function Conversation() {
       setMessages(data.messages);
     } catch {
       setMessages([]);
+      triggerErrorToast();
     }
   }, [API_ADDRESS, conversationId]);
 
@@ -114,15 +131,19 @@ export default function Conversation() {
 
     setWaitingAnswer(true);
 
-    await axios.post(`${API_ADDRESS}/assistant/conversation/message`, {
-      role: "user",
-      content: message,
-      conversationId,
-    });
+    try {
+      await axios.post(`${API_ADDRESS}/assistant/conversation/message`, {
+        role: "user",
+        content: message,
+        conversationId,
+      });
 
-    setWaitingAnswer(false);
-
-    fetchMessages();
+      fetchMessages();
+    } catch {
+      triggerErrorToast();
+    } finally {
+      setWaitingAnswer(false);
+    }
   };
 
   const newConversation = () => {
@@ -159,6 +180,7 @@ export default function Conversation() {
 
   return (
     <main className="app">
+      <ToastContainer />
       <header
         className="appHeader"
         style={{
