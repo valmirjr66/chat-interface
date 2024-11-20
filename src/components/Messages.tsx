@@ -133,7 +133,10 @@ function Message(
                 <a
                   href={annotation.downloadURL}
                   download={annotation.displayName}
+                  target="_blank"
+                  rel="noreferrer"
                   className="downloadFile"
+                  key={index}
                 >
                   {`[${index + 1}]. `}
                   {annotation.displayName}

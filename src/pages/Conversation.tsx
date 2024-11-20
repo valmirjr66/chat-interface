@@ -312,7 +312,12 @@ export default function Conversation() {
               >
                 <div className="referencesHeader">References</div>
                 <div className="referencesBoard">
-                  <div style={{ height: "100%", paddingTop: 20 }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      paddingTop: 20,
+                    }}
+                  >
                     {allReferences.map((item) => {
                       return (
                         <a
@@ -329,7 +334,7 @@ export default function Conversation() {
                             </caption>
                             <img
                               src={item.previewImageURL}
-                              width={150}
+                              width="100%"
                               alt="Teste"
                               className="previewImage"
                             />
