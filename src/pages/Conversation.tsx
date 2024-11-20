@@ -14,11 +14,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 type Reference = {
-  id: string;
-  conversationId: string;
-  url: string;
-  title: string;
-  imgURL: string;
+  fileId: string;
+  downloadURL: string;
+  displayName: string;
+  previewImageURL?: string;
 };
 
 export default function Conversation() {
@@ -33,10 +32,7 @@ export default function Conversation() {
     return (strConversationHistory && JSON.parse(strConversationHistory)) || [];
   });
 
-  const [allReferences, setAllReferences] = useState<Reference[]>(() => {
-    const strAllReferences = localStorage.getItem("allReferences");
-    return (strAllReferences && JSON.parse(strAllReferences)) || [];
-  });
+  const [allReferences, setAllReferences] = useState<Reference[]>([]);
 
   const API_ADDRESS = process.env.REACT_APP_API_URL;
 
@@ -51,14 +47,6 @@ export default function Conversation() {
   const [waitingAnswer, setWaitingAnswer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showReferences, setShowReferences] = useState(false);
-
-  const pushNewReference = (newReference: Reference) => {
-    setAllReferences((prevState) => {
-      const newList = [...prevState, newReference];
-      localStorage.setItem("allReferences", JSON.stringify(newList));
-      return newList;
-    });
-  };
 
   const triggerErrorToast = () => {
     toast("Something wen't wrong, please try again 😟", {
@@ -99,6 +87,7 @@ export default function Conversation() {
       }
 
       setMessages(data.messages);
+      setAllReferences(data.references);
     } catch {
       setMessages([]);
       triggerErrorToast();
@@ -324,39 +313,30 @@ export default function Conversation() {
                 <div className="referencesHeader">References</div>
                 <div className="referencesBoard">
                   <div style={{ height: "100%", paddingTop: 20 }}>
-                    {allReferences
-                      .filter(
-                        (reference) =>
-                          reference.conversationId === conversationId
-                      )
-                      .map((item) => {
-                        return (
-                          <a
-                            href={item.url}
-                            className="referenceCard"
-                            target="_blank"
-                            key={item.id}
-                            rel="noreferrer"
-                          >
+                    {allReferences.map((item) => {
+                      return (
+                        <a
+                          href={item.downloadURL}
+                          className="referenceCard"
+                          target="_blank"
+                          key={item.fileId}
+                          rel="noreferrer"
+                        >
+                          <img src={webIcon} alt="Reference link" width={20} />
+                          <div className="referenceCardContent">
+                            <caption className="previewCaption">
+                              {item.displayName}
+                            </caption>
                             <img
-                              src={webIcon}
-                              alt="Reference link"
-                              width={20}
+                              src={item.previewImageURL}
+                              width={150}
+                              alt="Teste"
+                              className="previewImage"
                             />
-                            <div className="referenceCardContent">
-                              <caption className="previewCaption">
-                                {item.title}
-                              </caption>
-                              <img
-                                src={item.imgURL}
-                                width={150}
-                                alt="Teste"
-                                className="previewImage"
-                              />
-                            </div>
-                          </a>
-                        );
-                      })}
+                          </div>
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
