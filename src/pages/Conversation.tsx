@@ -308,6 +308,8 @@ export default function Conversation() {
                   display: isMobile && !showReferences ? "none" : "flex",
                   position: isMobile ? "fixed" : "relative",
                   right: isMobile ? 100 : "unset",
+                  width: isMobile ? 'unset' : '25%',
+                  height: isMobile ? '70vh' : '60vh'
                 }}
               >
                 <div className="referencesHeader">References</div>

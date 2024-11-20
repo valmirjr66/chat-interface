@@ -27,10 +27,11 @@ export default function Input(props: {
   }
 
   return (
-    <div
-      style={{ display: "flex", justifyContent: "flex-start" }}
-    >
-      <form onSubmit={(e) => onSubmit(e)} style={{ width: "75%" }}>
+    <div style={{ display: "flex", justifyContent: "flex-start" }}>
+      <form
+        onSubmit={(e) => onSubmit(e)}
+        style={{ width: isMobile ? "100%" : "75%" }}
+      >
         <input
           onChange={(e) => onChange(e)}
           value={text}

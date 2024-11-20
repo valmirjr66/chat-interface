@@ -26,7 +26,6 @@
   background-color: #3a3a3a;
   border: rgba(255, 255, 255, 0.8) solid 1px;
   border-radius: 8px;
-  height: 60vh;
 }
 
 .messagesMessage {
@@ -95,13 +94,14 @@
 .appNav {
   background-color: #3a3a3a;
   border-right: rgba(255, 255, 255, 0.5) solid 1px;
-  height: calc(100vh - 100px);
+  height: 100%;
   width: 345px;
 }
 
 .appWrapper {
   display: flex;
   width: 100vw;
+  height: 100%;
 }
 
 .recentSearchWrapper {
@@ -120,7 +120,6 @@
   align-items: center;
   color: white;
   text-decoration: none;
-  margin-top: 20px;
 }
 
 .downloadFile:hover {
@@ -153,10 +152,8 @@
 
 .referencesWrapper {
   display: flex;
-  width: 25%;
   flex-direction: column;
   align-items: flex-start;
-  height: 60vh;
   padding: 16px 0px;
 }
 

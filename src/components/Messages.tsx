@@ -45,7 +45,13 @@ export default function Messages(props: {
   const LoadingDots = () => <img src={dotsGif} width={50} alt="Loading" />;
 
   return (
-    <ul className="messagesList">
+    <ul
+      className="messagesList"
+      style={{
+        fontSize: isMobile ? 14 : "unset",
+        height: isMobile ? "70vh" : "60vh",
+      }}
+    >
       {messages.map((message, index) =>
         Message(message, messages.length === index + 1, onSendMessage)
       )}
@@ -139,6 +145,7 @@ function Message(
                     rel="noreferrer"
                     className="downloadFile"
                     key={index}
+                    style={{ marginTop: isMobile ? 10 : 20 }}
                   >
                     {`[${index + 1}]. `}
                     {annotation.displayName}
