@@ -3,6 +3,8 @@ import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import dotsGif from "../imgs/dots.gif";
 import downloadIcon from "../imgs/ic-download.svg";
+import myAvatar from "../imgs/ic-me.svg";
+import aiAvatar from "../imgs/logo-eye.svg";
 
 type Annotation = {
   text: string;
@@ -17,15 +19,13 @@ const members = {
   me: {
     id: "1",
     clientData: {
-      color: "lightblue",
       username: "Me",
     },
   },
   they: {
     id: "2",
     clientData: {
-      color: "pink",
-      username: "Witness Lens",
+      username: "WITNESS LENS",
     },
   },
 };
@@ -104,9 +104,10 @@ function Message(
   return (
     <>
       <li key={id} className={className}>
-        <span
+        <img
           className="avatar"
-          style={{ backgroundColor: member.clientData.color }}
+          alt={member.clientData.username}
+          src={member.clientData.username === "Me" ? myAvatar : aiAvatar}
         />
         <div
           className="messageContent"
