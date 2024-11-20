@@ -25,7 +25,7 @@
   overflow: auto;
   background-color: #3a3a3a;
   border: rgba(255, 255, 255, 0.8) solid 1px;
-  border-radius: 13px;
+  border-radius: 8px;
   height: 60vh;
 }
 
@@ -169,7 +169,7 @@
   border-left: white solid 1px;
   border-top: white solid 1px;
   border-right: white solid 1px;
-  border-radius: 10px 10px 0px 0px;
+  border-radius: 8px 8px 0px 0px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -185,7 +185,7 @@
   border-bottom: white solid 1px;
   border-right: white solid 1px;
   margin-left: 16px;
-  border-radius: 0px 0px 10px 10px;
+  border-radius: 0px 0px 8px 8px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -220,7 +220,7 @@
   align-self: left;
   height: 100%;
   border-radius: 10px;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.6);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
 }
 
 .previewCaption {
