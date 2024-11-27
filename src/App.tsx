@@ -4,6 +4,7 @@ import { ptBR } from "@mui/x-date-pickers/locales";
 import "./App.css";
 import Conversation from "./pages/Conversation";
 import Font from "react-font";
+import Login from "./pages/Login";
 
 const theme = createTheme(
   {
@@ -15,10 +16,12 @@ const theme = createTheme(
 );
 
 function App() {
+  const userId = localStorage.getItem("userId");
+
   return (
     <ThemeProvider theme={theme}>
       <Font family="Overpass Mono">
-        <Conversation />
+        {userId ? <Conversation /> : <Login />}
       </Font>
     </ThemeProvider>
   );

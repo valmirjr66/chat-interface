@@ -228,3 +228,49 @@
 .appInner {
   display: flex;
 }
+
+.loginWrapper {
+  width: 100vw;
+  height: 100vh;
+  background-image: url(imgs/light-background-home.svg);
+  background-size: cover;
+  background-position: bottom;
+  background-color: #3c3c3c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.loginContainer {
+  background-color: #3a3a3a;
+  padding: 24px 32px;
+  border: rgba(255, 255, 255, 0.8) solid 1px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 350px;
+}
+
+.fieldWrapper {
+  margin-bottom: 32px;
+  display: flex;
+  width: 100%;
+}
+
+.fieldWrapper > label {
+  background-color: #dfdfdf;
+  color: black;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px 0px 0px 10px;
+  padding: 0px 10px;
+}
+
+.fieldWrapper > input {
+  padding: 5px 5px 5px 15px;
+  border-radius: 0px 10px 10px 0px;
+}
