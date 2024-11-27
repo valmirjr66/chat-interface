@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 import Input from "../components/Input";
 import Messages from "../components/Messages";
@@ -9,8 +11,6 @@ import chatBubble from "../imgs/ic-chatbuble.svg";
 import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import webIcon from "../imgs/web-icon.svg";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import httpCallers from "../service";
 
 type Reference = {
@@ -20,17 +20,20 @@ type Reference = {
   previewImageURL?: string;
 };
 
-export default function Conversation() {
+type Conversation = {
+  id: string;
+  title: string;
+  createdAt: string;
+};
+
+export default function Chat() {
   const [conversationId, setConversationId] = useState<string>(
     () => localStorage.getItem("conversationId") || uuidv4()
   );
 
   const [conversationHistory, setConversationHistory] = useState<
-    { id: string; title: string }[]
-  >(() => {
-    const strConversationHistory = localStorage.getItem("conversationHistory");
-    return (strConversationHistory && JSON.parse(strConversationHistory)) || [];
-  });
+    Conversation[]
+  >([]);
 
   const [allReferences, setAllReferences] = useState<Reference[]>([]);
 
@@ -60,38 +63,35 @@ export default function Conversation() {
     });
   };
 
+  const fetchConversationsHistory = useCallback(async () => {
+    try {
+      const { data } = await httpCallers.get(`assistant/conversations`);
+
+      setConversationHistory(
+        (data.conversations as Conversation[]).sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+      );
+    } catch {
+      setConversationHistory([]);
+    }
+  }, []);
+
   const fetchMessages = useCallback(async () => {
     try {
       const { data } = await httpCallers.get(
-        `assistant/conversation/${conversationId}`
+        `assistant/conversations/${conversationId}`
       );
-
-      if (data.messages.length === 2) {
-        const newConversationHistory = conversationHistory;
-        if (
-          newConversationHistory.findIndex(
-            (item) => item.id === conversationId
-          ) === -1
-        ) {
-          newConversationHistory.push({
-            id: conversationId,
-            title: data.title,
-          });
-          localStorage.setItem(
-            "conversationHistory",
-            JSON.stringify(newConversationHistory)
-          );
-          setConversationHistory(newConversationHistory);
-        }
-      }
 
       setMessages(data.messages);
       setAllReferences(data.references);
+      fetchConversationsHistory();
     } catch {
       setMessages([]);
       triggerErrorToast();
     }
-  }, [conversationId]);
+  }, [conversationId, fetchConversationsHistory]);
 
   useEffect(() => {
     if (conversationId) {
@@ -105,6 +105,10 @@ export default function Conversation() {
     const element = document.getElementById("anchor");
     element?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    fetchConversationsHistory();
+  }, [fetchConversationsHistory]);
 
   const onSendMessage = async (message: string) => {
     setMessages((prevState) => [
@@ -120,7 +124,7 @@ export default function Conversation() {
     setWaitingAnswer(true);
 
     try {
-      await httpCallers.post('assistant/conversation/message', {
+      await httpCallers.post("assistant/conversations/message", {
         role: "user",
         content: message,
         conversationId,
@@ -138,32 +142,14 @@ export default function Conversation() {
     setConversationId(uuidv4());
   };
 
-  function removeRecentSearch(id: string): void {
-    const strCurrentConversationHistory = localStorage.getItem(
-      "conversationHistory"
-    );
-
-    const newConversationHistory =
-      strCurrentConversationHistory &&
-      (JSON.parse(strCurrentConversationHistory) as {
-        id: string;
-        title: string;
-      }[]);
-
-    const filteredHistory =
-      (newConversationHistory &&
-        newConversationHistory.filter((item) => item.id !== id)) ||
-      [];
-
-    setConversationHistory(filteredHistory);
-    localStorage.setItem(
-      "conversationHistory",
-      JSON.stringify(filteredHistory)
-    );
+  async function removeRecentSearch(id: string) {
+    await httpCallers.delete(`assistant/conversations/${id}`);
 
     if (id === conversationId) {
-      setConversationId(uuidv4());
+      newConversation();
     }
+
+    await fetchConversationsHistory();
   }
 
   return (

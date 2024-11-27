@@ -1,9 +1,9 @@
 import { ThemeProvider } from "@emotion/react";
 import { createTheme } from "@mui/material";
 import { ptBR } from "@mui/x-date-pickers/locales";
-import "./App.css";
-import Conversation from "./pages/Conversation";
 import Font from "react-font";
+import "./App.css";
+import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 
 const theme = createTheme(
@@ -20,9 +20,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Font family="Overpass Mono">
-        {userId ? <Conversation /> : <Login />}
-      </Font>
+      <Font family="Overpass Mono">{userId ? <Chat /> : <Login />}</Font>
     </ThemeProvider>
   );
 }
