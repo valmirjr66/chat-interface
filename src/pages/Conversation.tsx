@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { v4 as uuidv4 } from "uuid";
@@ -12,6 +11,7 @@ import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import webIcon from "../imgs/web-icon.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import httpCallers from "../service";
 
 type Reference = {
   fileId: string;
@@ -33,8 +33,6 @@ export default function Conversation() {
   });
 
   const [allReferences, setAllReferences] = useState<Reference[]>([]);
-
-  const API_ADDRESS = process.env.REACT_APP_API_URL;
 
   const [messages, setMessages] = useState(
     [] as {
@@ -64,8 +62,9 @@ export default function Conversation() {
 
   const fetchMessages = useCallback(async () => {
     try {
-      const MESSAGES_ENDPOINT = `${API_ADDRESS}/assistant/conversation/${conversationId}`;
-      const { data } = await axios.get(MESSAGES_ENDPOINT);
+      const { data } = await httpCallers.get(
+        `assistant/conversation/${conversationId}`
+      );
 
       if (data.messages.length === 2) {
         const newConversationHistory = conversationHistory;
@@ -92,7 +91,7 @@ export default function Conversation() {
       setMessages([]);
       triggerErrorToast();
     }
-  }, [API_ADDRESS, conversationId]);
+  }, [conversationId]);
 
   useEffect(() => {
     if (conversationId) {
@@ -121,7 +120,7 @@ export default function Conversation() {
     setWaitingAnswer(true);
 
     try {
-      await axios.post(`${API_ADDRESS}/assistant/conversation/message`, {
+      await httpCallers.post('assistant/conversation/message', {
         role: "user",
         content: message,
         conversationId,
@@ -308,8 +307,8 @@ export default function Conversation() {
                   display: isMobile && !showReferences ? "none" : "flex",
                   position: isMobile ? "fixed" : "relative",
                   right: isMobile ? 100 : "unset",
-                  width: isMobile ? 'unset' : '25%',
-                  height: isMobile ? '70vh' : '60vh'
+                  width: isMobile ? "unset" : "25%",
+                  height: isMobile ? "70vh" : "60vh",
                 }}
               >
                 <div className="referencesHeader">References</div>
