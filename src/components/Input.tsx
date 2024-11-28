@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import btnSearch from "../imgs/btn-search.svg";
 import referenceIcon from "../imgs/ic-reference.svg";
 import { isMobile } from "react-device-detect";
@@ -26,6 +26,11 @@ export default function Input(props: {
     onSendMessage(text);
   }
 
+  const isButtonDisabled = useMemo(
+    () => text?.length === 0 || waitingAnswer,
+    [text, waitingAnswer]
+  );
+
   return (
     <div style={{ display: "flex", justifyContent: "flex-start" }}>
       <form
@@ -40,8 +45,13 @@ export default function Input(props: {
           autoFocus
           spellCheck={false}
         />
-        <button className="send" disabled={text?.length === 0 || waitingAnswer}>
-          <img src={btnSearch} width={50} alt="Search" />
+        <button className="send" disabled={isButtonDisabled}>
+          <img
+            src={btnSearch}
+            width={50}
+            alt="Search"
+            style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+          />
         </button>
       </form>
       <div
