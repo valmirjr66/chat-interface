@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
+import Skeleton from "react-loading-skeleton";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
@@ -26,6 +27,13 @@ type Conversation = {
   createdAt: string;
 };
 
+type Message = {
+  id: string;
+  content: string;
+  role: string;
+  conversationId: string;
+};
+
 export default function Chat() {
   const [conversationId, setConversationId] = useState<string>(
     () => localStorage.getItem("conversationId") || uuidv4()
@@ -36,18 +44,12 @@ export default function Chat() {
   >([]);
 
   const [allReferences, setAllReferences] = useState<Reference[]>([]);
-
-  const [messages, setMessages] = useState(
-    [] as {
-      id: string;
-      content: string;
-      role: string;
-      conversationId: string;
-    }[]
-  );
+  const [messages, setMessages] = useState<Message[]>([]);
   const [waitingAnswer, setWaitingAnswer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showReferences, setShowReferences] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
   const triggerErrorToast = () => {
     toast("Something wen't wrong, please try again 😟", {
@@ -63,20 +65,27 @@ export default function Chat() {
     });
   };
 
-  const fetchConversationsHistory = useCallback(async () => {
-    try {
-      const { data } = await httpCallers.get(`assistant/conversations`);
+  const fetchConversationsHistory = useCallback(
+    async (showLoading?: boolean) => {
+      try {
+        showLoading && setIsLoadingHistory(true);
 
-      setConversationHistory(
-        (data.conversations as Conversation[]).sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-      );
-    } catch {
-      setConversationHistory([]);
-    }
-  }, []);
+        const { data } = await httpCallers.get(`assistant/conversations`);
+
+        setConversationHistory(
+          (data.conversations as Conversation[]).sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+        );
+      } catch {
+        setConversationHistory([]);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    },
+    []
+  );
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -90,6 +99,8 @@ export default function Chat() {
     } catch {
       setMessages([]);
       triggerErrorToast();
+    } finally {
+      setIsLoadingMessages(false);
     }
   }, [conversationId, fetchConversationsHistory]);
 
@@ -107,7 +118,7 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    fetchConversationsHistory();
+    fetchConversationsHistory(true);
   }, [fetchConversationsHistory]);
 
   const onSendMessage = async (message: string) => {
@@ -140,6 +151,7 @@ export default function Chat() {
 
   const newConversation = () => {
     setConversationId(uuidv4());
+    setAllReferences([]);
   };
 
   async function removeRecentSearch(id: string) {
@@ -149,7 +161,7 @@ export default function Chat() {
       newConversation();
     }
 
-    await fetchConversationsHistory();
+    await fetchConversationsHistory(true);
   }
 
   return (
@@ -210,66 +222,73 @@ export default function Chat() {
               padding: 20,
             }}
           >
-            {conversationHistory.length > 0 && (
-              <>
-                <div
-                  style={{
-                    fontWeight: "bold",
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: 20,
-                    border: "1px solid white",
-                    padding: "15px 0px",
-                    borderRadius: 15,
-                  }}
-                >
-                  Recent Searches
-                </div>
-                <div style={{ borderLeft: "1px solid white" }}>
-                  {conversationHistory.reverse().map((item, index) => (
+            <div
+              style={{
+                fontWeight: "bold",
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: 20,
+                border: "1px solid white",
+                padding: "15px 0px",
+                borderRadius: 15,
+              }}
+            >
+              Recent Searches
+            </div>
+            <div
+              style={{
+                borderLeft: isLoadingHistory ? "" : "1px solid white",
+              }}
+            >
+              {isLoadingHistory ? (
+                <>
+                  <Skeleton height={130} />
+                  <Skeleton height={80} style={{ marginTop: 32 }} />
+                </>
+              ) : (
+                conversationHistory.map((item, index) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
+                      onClick={() => {
+                        setConversationId(item.id);
+                        localStorage.setItem("conversationId", item.id);
                       }}
+                      style={{
+                        marginTop: index === 0 ? 0 : 20,
+                        filter:
+                          item.id === conversationId
+                            ? "invert(76%) sepia(16%) saturate(7326%) hue-rotate(62deg) brightness(282%) contrast(93%)"
+                            : "unset",
+                      }}
+                      className="recentSearchWrapper"
                     >
-                      <div
-                        onClick={() => {
-                          setConversationId(item.id);
-                          localStorage.setItem("conversationId", item.id);
-                        }}
-                        style={{
-                          marginTop: index === 0 ? 0 : 20,
-                          filter:
-                            item.id === conversationId
-                              ? "invert(76%) sepia(16%) saturate(7326%) hue-rotate(62deg) brightness(282%) contrast(93%)"
-                              : "unset",
-                        }}
-                        className="recentSearchWrapper"
-                      >
-                        <img
-                          src={chatBubble}
-                          width={20}
-                          alt="Chat bubble"
-                          style={{ marginRight: 10 }}
-                        />
-                        {item.title}
-                      </div>
                       <img
-                        src={closeIcon}
+                        src={chatBubble}
                         width={20}
-                        alt="Remove"
-                        className="closeIcon"
-                        style={{ margin: "0px 10px", cursor: "pointer" }}
-                        onClick={() => removeRecentSearch(item.id)}
+                        alt="Chat bubble"
+                        style={{ marginRight: 10 }}
                       />
+                      {item.title}
                     </div>
-                  ))}
-                </div>
-              </>
-            )}
+                    <img
+                      src={closeIcon}
+                      width={20}
+                      alt="Remove"
+                      className="closeIcon"
+                      style={{ margin: "0px 10px", cursor: "pointer" }}
+                      onClick={() => removeRecentSearch(item.id)}
+                    />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </nav>
         <section className="appContent">
@@ -283,6 +302,7 @@ export default function Chat() {
           >
             <div className="appInner">
               <Messages
+                isLoading={isLoadingMessages}
                 messages={messages?.length === 0 ? [] : messages}
                 waitingAnswer={waitingAnswer}
                 onSendMessage={onSendMessage}
@@ -303,32 +323,45 @@ export default function Chat() {
                     style={{
                       height: "100%",
                       paddingTop: 20,
+                      width: "100%",
                     }}
                   >
-                    {allReferences.map((item) => {
-                      return (
-                        <a
-                          href={item.downloadURL}
-                          className="referenceCard"
-                          target="_blank"
-                          key={item.fileId}
-                          rel="noreferrer"
-                        >
-                          <img src={webIcon} alt="Reference link" width={20} />
-                          <div className="referenceCardContent">
-                            <caption className="previewCaption">
-                              {item.displayName}
-                            </caption>
+                    {isLoadingMessages ? (
+                      <Skeleton
+                        count={3}
+                        height={150}
+                        style={{ width: "100%", marginBottom: 32 }}
+                      />
+                    ) : (
+                      allReferences.map((item) => {
+                        return (
+                          <a
+                            href={item.downloadURL}
+                            className="referenceCard"
+                            target="_blank"
+                            key={item.fileId}
+                            rel="noreferrer"
+                          >
                             <img
-                              src={item.previewImageURL}
-                              width="100%"
-                              alt="Teste"
-                              className="previewImage"
+                              src={webIcon}
+                              alt="Reference link"
+                              width={20}
                             />
-                          </div>
-                        </a>
-                      );
-                    })}
+                            <div className="referenceCardContent">
+                              <caption className="previewCaption">
+                                {item.displayName}
+                              </caption>
+                              <img
+                                src={item.previewImageURL}
+                                width="100%"
+                                alt="Teste"
+                                className="previewImage"
+                              />
+                            </div>
+                          </a>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               </div>

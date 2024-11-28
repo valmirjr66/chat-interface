@@ -5,6 +5,8 @@ import dotsGif from "../imgs/dots.gif";
 import downloadIcon from "../imgs/ic-download.svg";
 import myAvatar from "../imgs/ic-me.svg";
 import aiAvatar from "../imgs/logo-eye.svg";
+import Skeleton from "react-loading-skeleton";
+import { ReactElement } from "react";
 
 type Annotation = {
   text: string;
@@ -13,6 +15,13 @@ type Annotation = {
   file_citation: { file_id: string };
   displayName: string;
   downloadURL: string;
+};
+
+type Message = {
+  id: string;
+  content: string | ReactElement;
+  role: string;
+  conversationId: string;
 };
 
 const members = {
@@ -31,18 +40,59 @@ const members = {
 };
 
 export default function Messages(props: {
-  messages: {
-    role: string;
-    content: React.ReactNode;
-    id: string;
-    annotations?: Annotation[];
-  }[];
+  messages: Message[];
   waitingAnswer: boolean;
   onSendMessage: (msg: string) => void;
+  isLoading: boolean;
 }) {
-  const { messages, waitingAnswer, onSendMessage } = props;
+  const { messages, waitingAnswer, onSendMessage, isLoading } = props;
 
   const LoadingDots = () => <img src={dotsGif} width={50} alt="Loading" />;
+
+  const loadingMessages: Message[] = [
+    {
+      conversationId: "loading_conversation",
+      id: "1",
+      role: "user",
+      content: (
+        <Skeleton
+          style={{ display: "block", width: '15vw' }}
+          height={50}
+          baseColor="#57577d"
+          highlightColor="#7d7da3"
+          borderRadius={10}
+        />
+      ),
+    },
+    {
+      conversationId: "loading_conversation",
+      id: "2",
+      role: "assistant",
+      content: (
+        <Skeleton
+          style={{ display: "block", width: '20vw' }}
+          height={200}
+          baseColor="#585858"
+          highlightColor="#7f7f7f"
+          borderRadius={10}
+        />
+      ),
+    },
+    {
+      conversationId: "loading_conversation",
+      id: "3",
+      role: "user",
+      content: (
+        <Skeleton
+          style={{ display: "block", width: '20vw' }}
+          height={50}
+          baseColor="#57577d"
+          highlightColor="#7d7da3"
+          borderRadius={10}
+        />
+      ),
+    },
+  ];
 
   return (
     <ul
@@ -52,11 +102,11 @@ export default function Messages(props: {
         height: isMobile ? "70vh" : "60vh",
       }}
     >
-      {messages.map((message, index) =>
-        Message(message, messages.length === index + 1, onSendMessage)
+      {(isLoading ? loadingMessages : messages).map((message, index) =>
+        MessageBalloon(message, messages.length === index + 1, onSendMessage)
       )}
       {waitingAnswer &&
-        Message(
+        MessageBalloon(
           {
             role: "assistant",
             content: <LoadingDots />,
@@ -68,7 +118,7 @@ export default function Messages(props: {
   );
 }
 
-function Message(
+function MessageBalloon(
   props: {
     id: string;
     role: string;
