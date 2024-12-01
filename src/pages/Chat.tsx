@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Skeleton from "react-loading-skeleton";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,6 +13,7 @@ import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import webIcon from "../imgs/web-icon.svg";
 import httpCallers from "../service";
+import { io } from "socket.io-client";
 
 type Reference = {
   fileId: string;
@@ -35,6 +36,30 @@ type Message = {
 };
 
 export default function Chat() {
+  const socket = useMemo(() => {
+    const socketInstance = io(`${process.env.REACT_APP_WS_URL}`, {
+      extraHeaders: { userId: localStorage.getItem("userId")! },
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: Infinity,
+    });
+
+    socketInstance.on("connect", () => {
+      const engine = socket.io.engine;
+
+      engine.on("packet", (x) => {
+        console.log("packet", x);
+      });
+
+      engine.on("packetCreate", ({ type, data }) => {
+        console.log("packetCreate", { type, data });
+      });
+    });
+
+    return socketInstance;
+  }, []);
+
   const [conversationId, setConversationId] = useState<string>(
     () => localStorage.getItem("conversationId") || uuidv4()
   );
@@ -135,13 +160,9 @@ export default function Chat() {
     setWaitingAnswer(true);
 
     try {
-      await httpCallers.post("assistant/conversations/message", {
-        role: "user",
-        content: message,
-        conversationId,
-      });
+      socket.send({ conversationId, content: message });
 
-      fetchMessages();
+      // fetchMessages();
     } catch {
       triggerErrorToast();
     } finally {
