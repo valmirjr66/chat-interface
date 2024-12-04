@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Skeleton from "react-loading-skeleton";
-import { ToastContainer, toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import Input from "../components/Input";
 import Messages from "../components/Messages";
@@ -13,7 +14,6 @@ import eyesAdd from "../imgs/ic-eyes-add.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import webIcon from "../imgs/web-icon.svg";
 import httpCallers from "../service";
-import { io } from "socket.io-client";
 
 type Reference = {
   fileId: string;
@@ -36,33 +36,60 @@ type Message = {
 };
 
 export default function Chat() {
-  const socket = useMemo(() => {
-    const socketInstance = io(`${process.env.REACT_APP_WS_URL}`, {
-      extraHeaders: { userId: localStorage.getItem("userId")! },
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: Infinity,
-    });
-
-    socketInstance.on("connect", () => {
-      const engine = socket.io.engine;
-
-      engine.on("packet", (x) => {
-        console.log("packet", x);
-      });
-
-      engine.on("packetCreate", ({ type, data }) => {
-        console.log("packetCreate", { type, data });
-      });
-    });
-
-    return socketInstance;
-  }, []);
+  const socketRef = useRef<Socket | null>(null);
 
   const [conversationId, setConversationId] = useState<string>(
     () => localStorage.getItem("conversationId") || uuidv4()
   );
+
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(`${process.env.REACT_APP_WS_URL}`, {
+        extraHeaders: { userId: localStorage.getItem("userId")! },
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: Infinity,
+      });
+
+      socketRef.current.on(
+        "message",
+        ({ conversationId: incomingConversationId, snapshot, finished }) => {
+          if (finished) {
+            setWaitingAnswer(false);
+          }
+          
+          if (incomingConversationId === conversationId) {
+            setMessages((prevState) => {
+              const newState = [...prevState];
+
+              if (newState[newState.length - 1].role === "user") {
+                newState.push({
+                  id: `packet-${uuidv4()}`,
+                  conversationId,
+                  role: "assistant",
+                  content: "",
+                });
+              }
+
+              const latestMsg = newState.pop()!;
+
+              latestMsg.content = snapshot;
+
+              return [...newState, latestMsg];
+            });
+          }
+        }
+      );
+    }
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [conversationId]);
 
   const [conversationHistory, setConversationHistory] = useState<
     Conversation[]
@@ -160,13 +187,9 @@ export default function Chat() {
     setWaitingAnswer(true);
 
     try {
-      socket.send({ conversationId, content: message });
-
-      // fetchMessages();
+      socketRef.current?.send({ conversationId, content: message });
     } catch {
       triggerErrorToast();
-    } finally {
-      setWaitingAnswer(false);
     }
   };
 

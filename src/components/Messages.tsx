@@ -105,7 +105,7 @@ export default function Messages(props: {
       {(isLoading ? loadingMessages : messages).map((message, index) =>
         MessageBalloon(message, messages.length === index + 1, onSendMessage)
       )}
-      {waitingAnswer &&
+      {waitingAnswer && messages[messages.length - 1].role === 'user' &&
         MessageBalloon(
           {
             role: "assistant",
