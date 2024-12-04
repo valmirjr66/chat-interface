@@ -11,6 +11,7 @@ jobs:
     env:
       CI: false
       REACT_APP_API_URL: https://yoko-883258931528.southamerica-east1.run.app/api
+      REACT_APP_WS_URL: https://yoko-883258931528.southamerica-east1.run.app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
