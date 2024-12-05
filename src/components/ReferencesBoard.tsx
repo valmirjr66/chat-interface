@@ -58,7 +58,7 @@ export default function ReferencesBoard({
                     <img
                       src={item.previewImageURL}
                       width="100%"
-                      alt="Teste"
+                      alt={`Preview of ${item.displayName}`}
                       className="previewImage"
                     />
                   </div>
