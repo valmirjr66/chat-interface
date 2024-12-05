@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Skeleton from "react-loading-skeleton";
+import { TypeAnimation } from "react-type-animation";
+import { io, Socket } from "socket.io-client";
+import useToaster from "../hooks/useToaster";
 import closeIcon from "../imgs/close.svg";
-import whiteChatBubble from "../imgs/ic-chatbuble-white.svg";
 import greenChatBubble from "../imgs/ic-chatbuble-green.svg";
+import whiteChatBubble from "../imgs/ic-chatbuble-white.svg";
 import eyesAdd from "../imgs/ic-eyes-add.svg";
 import httpCallers from "../service";
 import { Conversation } from "../types";
-import useToaster from "../hooks/useToaster";
 
 interface HistoryProps {
   showMenu: boolean;
@@ -22,18 +24,62 @@ export default function History({
   conversationId,
   setConversationId,
 }: HistoryProps) {
+  const getAnimatedTitle = useCallback(
+    (title: string) => (
+      <TypeAnimation
+        sequence={createTypeAnimationSequence(title)}
+        speed={90}
+        wrapper="span"
+        cursor={false}
+        className="customCursorTypeAnimation"
+      />
+    ),
+    []
+  );
+
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(`${process.env.REACT_APP_WS_URL}`, {
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: Infinity,
+      });
+
+      socketRef.current.on("newConversation", ({ id, title, createdAt }) => {
+        setHistory((prevState) => [
+          { id, title, createdAt, animatedTitle: getAnimatedTitle(title) },
+          ...prevState,
+        ]);
+      });
+    }
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [conversationId, getAnimatedTitle]);
+
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
-  const [conversationHistory, setConversationHistory] = useState<
-    Conversation[]
+  const [history, setHistory] = useState<
+    {
+      id: string;
+      title: string;
+      createdAt: string;
+      animatedTitle: ReactElement;
+    }[]
   >([]);
 
   const { triggerToast } = useToaster({
-    messageContent:
-      "Something wen't wrong while loading your history, please try again 😟",
+    messageContent: "Something wen't wrong, please try again 😟",
     type: "error",
   });
 
-  async function removeRecentSearch(id: string) {
+  async function removeHistoryItem(id: string) {
     try {
       await httpCallers.delete(`assistant/conversations/${id}`);
 
@@ -41,15 +87,26 @@ export default function History({
         newConversation();
       }
 
-      setConversationHistory((prevState) =>
-        prevState.filter((item) => item.id !== id)
-      );
+      setHistory((prevState) => prevState.filter((item) => item.id !== id));
     } catch {
       triggerToast();
     }
   }
 
-  const fetchConversationsHistory = useCallback(async () => {
+  function createTypeAnimationSequence(input: string) {
+    const words = input.split(" ");
+    const result = [];
+    for (let i = 1; i <= words.length; i++) {
+      result.push(words.slice(0, i).join(" "));
+    }
+    return [
+      ...result,
+      (element: HTMLElement | null) =>
+        element?.classList.remove("customCursorTypeAnimation"),
+    ];
+  }
+
+  const fetchConversationHistory = useCallback(async () => {
     try {
       const { data } = await httpCallers.get(`assistant/conversations`);
 
@@ -58,17 +115,23 @@ export default function History({
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
-      setConversationHistory(sortedHistory);
+      const animatedHistory = sortedHistory.map((item) => ({
+        ...item,
+        animatedTitle: getAnimatedTitle(item.title),
+      }));
+
+      setHistory(animatedHistory);
     } catch {
-      setConversationHistory([]);
+      triggerToast();
+      setHistory([]);
     } finally {
       setIsLoadingHistory(false);
     }
-  }, []);
+  }, [getAnimatedTitle, triggerToast]);
 
   useEffect(() => {
-    fetchConversationsHistory();
-  }, [fetchConversationsHistory]);
+    fetchConversationHistory();
+  }, [fetchConversationHistory]);
 
   return (
     <nav
@@ -128,13 +191,14 @@ export default function History({
               <Skeleton height={80} style={{ marginTop: 32 }} />
             </>
           ) : (
-            conversationHistory.map((item, index) => (
+            history.map((item, index) => (
               <div
                 style={{
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
+                key={item.id}
               >
                 <div
                   onClick={() => {
@@ -157,7 +221,7 @@ export default function History({
                     alt="Chat bubble"
                     style={{ marginRight: 10 }}
                   />
-                  {item.title}
+                  {item.animatedTitle}
                 </div>
                 <img
                   src={closeIcon}
@@ -165,7 +229,7 @@ export default function History({
                   alt="Remove"
                   className="closeIcon"
                   style={{ margin: "0px 10px", cursor: "pointer" }}
-                  onClick={() => removeRecentSearch(item.id)}
+                  onClick={() => removeHistoryItem(item.id)}
                 />
               </div>
             ))
