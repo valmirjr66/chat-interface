@@ -36,7 +36,6 @@ button {
   transition: transform 0.1s ease;
   overflow: hidden;
   white-space: nowrap;
-  display: block;
   text-overflow: ellipsis;
   display: flex;
   justify-content: space-around;
