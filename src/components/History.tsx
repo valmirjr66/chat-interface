@@ -24,6 +24,19 @@ export default function History({
   conversationId,
   setConversationId,
 }: HistoryProps) {
+  function createTypeAnimationSequence(input: string) {
+    const words = input.split(" ");
+    const result = [];
+    for (let i = 1; i <= words.length; i++) {
+      result.push(words.slice(0, i).join(" "));
+    }
+    return [
+      ...result,
+      (element: HTMLElement | null) =>
+        element?.classList.remove("customCursorTypeAnimation"),
+    ];
+  }
+
   const getAnimatedTitle = useCallback(
     (title: string) => (
       <TypeAnimation
@@ -93,45 +106,32 @@ export default function History({
     }
   }
 
-  function createTypeAnimationSequence(input: string) {
-    const words = input.split(" ");
-    const result = [];
-    for (let i = 1; i <= words.length; i++) {
-      result.push(words.slice(0, i).join(" "));
-    }
-    return [
-      ...result,
-      (element: HTMLElement | null) =>
-        element?.classList.remove("customCursorTypeAnimation"),
-    ];
-  }
-
-  const fetchConversationHistory = useCallback(async () => {
-    try {
-      const { data } = await httpCallers.get(`assistant/conversations`);
-
-      const sortedHistory = (data.conversations as Conversation[]).sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-      const animatedHistory = sortedHistory.map((item) => ({
-        ...item,
-        animatedTitle: getAnimatedTitle(item.title),
-      }));
-
-      setHistory(animatedHistory);
-    } catch {
-      triggerToast();
-      setHistory([]);
-    } finally {
-      setIsLoadingHistory(false);
-    }
-  }, [getAnimatedTitle, triggerToast]);
-
   useEffect(() => {
+    const fetchConversationHistory = async () => {
+      try {
+        const { data } = await httpCallers.get(`assistant/conversations`);
+
+        const sortedHistory = (data.conversations as Conversation[]).sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+        const animatedHistory = sortedHistory.map((item) => ({
+          ...item,
+          animatedTitle: getAnimatedTitle(item.title),
+        }));
+
+        setHistory(animatedHistory);
+      } catch {
+        triggerToast();
+        setHistory([]);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
     fetchConversationHistory();
-  }, [fetchConversationHistory]);
+  }, [getAnimatedTitle, triggerToast]);
 
   return (
     <nav

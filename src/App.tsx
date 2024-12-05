@@ -2,11 +2,11 @@ import { ThemeProvider } from "@emotion/react";
 import { createTheme } from "@mui/material";
 import { ptBR } from "@mui/x-date-pickers/locales";
 import Font from "react-font";
+import { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "./App.css";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
-import { SkeletonTheme } from "react-loading-skeleton";
 
 const theme = createTheme(
   {
