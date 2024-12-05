@@ -116,12 +116,12 @@ export default function History({
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
 
-        const animatedHistory = sortedHistory.map((item) => ({
+        const decoratedHistory = sortedHistory.map((item) => ({
           ...item,
           animatedTitle: getAnimatedTitle(item.title),
         }));
 
-        setHistory(animatedHistory);
+        setHistory(decoratedHistory);
       } catch {
         triggerToast();
         setHistory([]);
@@ -138,8 +138,7 @@ export default function History({
       className="appNav"
       style={{
         display: isMobile && !showMenu ? "none" : "block",
-        position: isMobile ? "fixed" : "relative",
-        overflowY: "auto",
+        position: isMobile ? "fixed" : "relative"
       }}
     >
       <div
@@ -184,6 +183,7 @@ export default function History({
           style={{
             borderLeft: isLoadingHistory ? "" : "1px solid white",
           }}
+          className="historyList"
         >
           {isLoadingHistory ? (
             <>

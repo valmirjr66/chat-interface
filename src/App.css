@@ -285,3 +285,8 @@
     opacity: 0;
   }
 }
+
+.historyList {
+  max-height: calc(100vh - 330px);
+  overflow-y: auto;
+}
