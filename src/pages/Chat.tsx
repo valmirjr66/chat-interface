@@ -6,7 +6,7 @@ import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import History from "../components/History";
 import Input from "../components/Input";
-import Messages from "../components/Messages";
+import MainFrame from "../components/MainFrame";
 import ReferencesBoard from "../components/ReferencesBoard";
 import useToaster from "../hooks/useToaster";
 import menuHamburger from "../imgs/Hamburger_icon.svg";
@@ -184,7 +184,7 @@ export default function Chat() {
             }}
           >
             <div className="appInner">
-              <Messages
+              <MainFrame
                 isLoading={isLoadingMessages}
                 messages={messages?.length === 0 ? [] : messages}
                 waitingAnswer={waitingAnswer}

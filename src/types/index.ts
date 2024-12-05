@@ -8,7 +8,7 @@ export type Reference = {
 export type Message = {
   id: string;
   content: string;
-  role: string;
+  role: "assistant" | "user";
   conversationId: string;
   annotations?: Reference[];
 };
