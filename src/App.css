@@ -214,7 +214,6 @@
 }
 
 .previewImage {
-  align-self: left;
   height: 100%;
   border-radius: 10px;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
@@ -223,6 +222,9 @@
 .previewCaption {
   margin-bottom: 10px;
   text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .appInner {
