@@ -8,7 +8,7 @@ import useToaster from "../hooks/useToaster";
 
 interface ReferencesBoardProps {
   showReferences: boolean;
-  conversationId: string;
+  conversationId: string | null;
 }
 
 export default function ReferencesBoard({
@@ -16,7 +16,7 @@ export default function ReferencesBoard({
   conversationId,
 }: ReferencesBoardProps) {
   const [references, setShowReferences] = useState<Reference[]>([]);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { triggerToast } = useToaster({ type: "error" });
 
@@ -32,11 +32,12 @@ export default function ReferencesBoard({
         triggerToast();
         setShowReferences([]);
       } finally {
-        setIsLoadingHistory(false);
+        setIsLoading(false);
       }
     };
 
     if (conversationId) {
+      setIsLoading(true);
       fetchReferences();
     } else {
       setShowReferences([]);
@@ -63,7 +64,7 @@ export default function ReferencesBoard({
             width: "100%",
           }}
         >
-          {isLoadingHistory ? (
+          {isLoading ? (
             <Skeleton
               count={3}
               height={150}

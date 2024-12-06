@@ -17,9 +17,7 @@ import { Message } from "../types";
 export default function Chat() {
   const socketRef = useRef<Socket | null>(null);
 
-  const [conversationId, setConversationId] = useState<string>(
-    () => localStorage.getItem("conversationId") || uuidv4()
-  );
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!socketRef.current) {
@@ -31,41 +29,43 @@ export default function Chat() {
         reconnectionAttempts: Infinity,
       });
 
-      socketRef.current.on(
-        "message",
-        ({
-          conversationId: incomingConversationId,
-          textSnapshot,
-          referencesSnapshot,
-          finished,
-        }) => {
-          if (finished) {
-            setWaitingAnswer(false);
+      if (conversationId) {
+        socketRef.current.on(
+          "message",
+          ({
+            conversationId: incomingConversationId,
+            textSnapshot,
+            referencesSnapshot,
+            finished,
+          }) => {
+            if (finished) {
+              setWaitingAnswer(false);
+            }
+
+            if (incomingConversationId === conversationId) {
+              setMessages((prevState) => {
+                const newState = [...prevState];
+
+                if (newState[newState.length - 1].role === "user") {
+                  newState.push({
+                    id: `packet-${uuidv4()}`,
+                    conversationId,
+                    role: "assistant",
+                    content: "",
+                  });
+                }
+
+                const latestMsg = newState.pop()!;
+
+                latestMsg.content = textSnapshot;
+                latestMsg.references = referencesSnapshot;
+
+                return [...newState, latestMsg];
+              });
+            }
           }
-
-          if (incomingConversationId === conversationId) {
-            setMessages((prevState) => {
-              const newState = [...prevState];
-
-              if (newState[newState.length - 1].role === "user") {
-                newState.push({
-                  id: `packet-${uuidv4()}`,
-                  conversationId,
-                  role: "assistant",
-                  content: "",
-                });
-              }
-
-              const latestMsg = newState.pop()!;
-
-              latestMsg.content = textSnapshot;
-              latestMsg.references = referencesSnapshot;
-
-              return [...newState, latestMsg];
-            });
-          }
-        }
-      );
+        );
+      }
     }
 
     return () => {
@@ -80,11 +80,13 @@ export default function Chat() {
   const [waitingAnswer, setWaitingAnswer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showReferences, setShowReferences] = useState(false);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   const { triggerToast } = useToaster({ type: "error" });
 
   const fetchMessages = useCallback(async () => {
+    setIsLoadingMessages(true);
+
     try {
       const { data } = await httpCallers.get(
         `assistant/conversations/${conversationId}`
@@ -102,9 +104,9 @@ export default function Chat() {
   }, [conversationId, triggerToast]);
 
   useEffect(() => {
+    setMessages([]);
+
     if (conversationId) {
-      localStorage.setItem("conversationId", conversationId);
-      setMessages([]);
       fetchMessages();
     }
   }, [conversationId, fetchMessages]);
@@ -115,13 +117,15 @@ export default function Chat() {
   }, [messages]);
 
   const onSendMessage = async (message: string) => {
+    const currentConversationId = conversationId ?? uuidv4();
+
     setMessages((prevState) => [
       ...prevState,
       {
         id: "temp_id",
         content: message,
         role: "user",
-        conversationId,
+        conversationId: currentConversationId,
       },
     ]);
 
@@ -137,7 +141,7 @@ export default function Chat() {
   };
 
   const newConversation = () => {
-    setConversationId(uuidv4());
+    setConversationId(null);
   };
 
   return (

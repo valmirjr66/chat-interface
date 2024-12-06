@@ -13,7 +13,7 @@ import { Conversation } from "../types";
 
 interface HistoryProps {
   showMenu: boolean;
-  conversationId: string;
+  conversationId: string | null;
   newConversation: () => void;
   setConversationId: (conversationId: string) => void;
 }
@@ -75,9 +75,9 @@ export default function History({
         socketRef.current = null;
       }
     };
-  }, [conversationId, getAnimatedTitle]);
+  }, [getAnimatedTitle]);
 
-  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [history, setHistory] = useState<
     {
       _id: string;
@@ -127,7 +127,7 @@ export default function History({
         );
         setHistory([]);
       } finally {
-        setIsLoadingHistory(false);
+        setIsLoading(false);
       }
     };
 
@@ -182,11 +182,11 @@ export default function History({
         </div>
         <div
           style={{
-            borderLeft: isLoadingHistory ? "" : "1px solid white",
+            borderLeft: isLoading ? "" : "1px solid white",
           }}
           className="historyList"
         >
-          {isLoadingHistory ? (
+          {isLoading ? (
             <>
               <Skeleton height={130} />
               <Skeleton height={80} style={{ marginTop: 32 }} />
