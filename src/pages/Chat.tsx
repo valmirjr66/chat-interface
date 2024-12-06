@@ -83,10 +83,7 @@ export default function Chat() {
   const [showReferences, setShowReferences] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
-  const { triggerToast } = useToaster({
-    messageContent: "Something wen't wrong, please try again 😟",
-    type: "error",
-  });
+  const { triggerToast } = useToaster({ type: "error" });
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -98,7 +95,9 @@ export default function Chat() {
       setAllReferences(data.references);
     } catch {
       setMessages([]);
-      triggerToast();
+      triggerToast(
+        "Something wen't wrong while fetching the messages, please try again 😟"
+      );
     } finally {
       setIsLoadingMessages(false);
     }
@@ -133,7 +132,9 @@ export default function Chat() {
     try {
       socketRef.current?.send({ conversationId, content: message });
     } catch {
-      triggerToast();
+      triggerToast(
+        "Something wen't wrong while sending the message, please try again 😟"
+      );
     }
   };
 

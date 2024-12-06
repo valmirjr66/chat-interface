@@ -87,10 +87,7 @@ export default function History({
     }[]
   >([]);
 
-  const { triggerToast } = useToaster({
-    messageContent: "Something wen't wrong, please try again 😟",
-    type: "error",
-  });
+  const { triggerToast } = useToaster({ type: "error" });
 
   async function removeHistoryItem(id: string) {
     try {
@@ -102,7 +99,9 @@ export default function History({
 
       setHistory((prevState) => prevState.filter((item) => item._id !== id));
     } catch {
-      triggerToast();
+      triggerToast(
+        "Something wen't wrong while removing the entry, please try again 😟"
+      );
     }
   }
 
@@ -123,7 +122,9 @@ export default function History({
 
         setHistory(decoratedHistory);
       } catch {
-        triggerToast();
+        triggerToast(
+          "Something wen't wrong while fetching the history, please try again 😟"
+        );
         setHistory([]);
       } finally {
         setIsLoadingHistory(false);
@@ -138,7 +139,7 @@ export default function History({
       className="appNav"
       style={{
         display: isMobile && !showMenu ? "none" : "block",
-        position: isMobile ? "fixed" : "relative"
+        position: isMobile ? "fixed" : "relative",
       }}
     >
       <div

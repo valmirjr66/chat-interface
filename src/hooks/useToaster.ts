@@ -2,13 +2,16 @@ import { useCallback } from "react";
 import { toast, TypeOptions } from "react-toastify";
 
 interface UseToasterProps {
-  messageContent: string;
+  defaultMessage?: string;
   type: TypeOptions
 }
 
-export default function useToaster({ messageContent, type }: UseToasterProps) {
-  const triggerToast = useCallback(() => {
-    toast(messageContent, {
+export default function useToaster({
+  type,
+  defaultMessage = "Something wen't wrong, please try again 😟",
+}: UseToasterProps) {
+  const triggerToast = useCallback((message?: string) => {
+    toast(message || defaultMessage, {
       position: "top-right",
       autoClose: 10000,
       hideProgressBar: false,
@@ -19,7 +22,7 @@ export default function useToaster({ messageContent, type }: UseToasterProps) {
       theme: "dark",
       type,
     });
-  }, [messageContent, type]);
+  }, [defaultMessage, type]);
 
   return { triggerToast };
 }
