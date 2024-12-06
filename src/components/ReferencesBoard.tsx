@@ -2,18 +2,47 @@ import { isMobile } from "react-device-detect";
 import Skeleton from "react-loading-skeleton";
 import webIcon from "../imgs/web-icon.svg";
 import { Reference } from "../types";
+import { useEffect, useState } from "react";
+import httpCallers from "../service";
+import useToaster from "../hooks/useToaster";
 
 interface ReferencesBoardProps {
   showReferences: boolean;
-  isLoadingMessages: boolean;
-  allReferences: Reference[];
+  conversationId: string;
 }
 
 export default function ReferencesBoard({
   showReferences,
-  isLoadingMessages,
-  allReferences,
+  conversationId,
 }: ReferencesBoardProps) {
+  const [references, setShowReferences] = useState<Reference[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+
+  const { triggerToast } = useToaster({ type: "error" });
+
+  useEffect(() => {
+    const fetchReferences = async () => {
+      try {
+        const { data } = await httpCallers.get(
+          `assistant/conversations/${conversationId}/references`
+        );
+
+        setShowReferences(data.references);
+      } catch {
+        triggerToast();
+        setShowReferences([]);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    if (conversationId) {
+      fetchReferences();
+    } else {
+      setShowReferences([]);
+    }
+  }, [conversationId, triggerToast]);
+
   return (
     <div
       className="referencesWrapper"
@@ -34,14 +63,14 @@ export default function ReferencesBoard({
             width: "100%",
           }}
         >
-          {isLoadingMessages ? (
+          {isLoadingHistory ? (
             <Skeleton
               count={3}
               height={150}
               style={{ width: "100%", marginBottom: 32 }}
             />
           ) : (
-            allReferences.map((item) => {
+            references.map((item) => {
               return (
                 <a
                   href={item.downloadURL}

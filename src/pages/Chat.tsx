@@ -76,7 +76,6 @@ export default function Chat() {
     };
   }, [conversationId]);
 
-  const [allReferences, setAllReferences] = useState<Reference[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [waitingAnswer, setWaitingAnswer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -92,7 +91,6 @@ export default function Chat() {
       );
 
       setMessages(data.messages);
-      setAllReferences(data.references);
     } catch {
       setMessages([]);
       triggerToast(
@@ -140,7 +138,6 @@ export default function Chat() {
 
   const newConversation = () => {
     setConversationId(uuidv4());
-    setAllReferences([]);
   };
 
   return (
@@ -193,8 +190,7 @@ export default function Chat() {
               />
               <ReferencesBoard
                 showReferences={showReferences}
-                isLoadingMessages={isLoadingMessages}
-                allReferences={allReferences}
+                conversationId={conversationId}
               />
             </div>
             <Input
