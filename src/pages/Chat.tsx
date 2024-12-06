@@ -12,7 +12,7 @@ import useToaster from "../hooks/useToaster";
 import menuHamburger from "../imgs/Hamburger_icon.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import httpCallers from "../service";
-import { Message, Reference } from "../types";
+import { Message } from "../types";
 
 export default function Chat() {
   const socketRef = useRef<Socket | null>(null);
