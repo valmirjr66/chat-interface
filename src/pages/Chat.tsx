@@ -36,7 +36,7 @@ export default function Chat() {
         ({
           conversationId: incomingConversationId,
           textSnapshot,
-          annotationsSnapshot,
+          referencesSnapshot,
           finished,
         }) => {
           if (finished) {
@@ -59,7 +59,7 @@ export default function Chat() {
               const latestMsg = newState.pop()!;
 
               latestMsg.content = textSnapshot;
-              latestMsg.annotations = annotationsSnapshot;
+              latestMsg.references = referencesSnapshot;
 
               return [...newState, latestMsg];
             });

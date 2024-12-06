@@ -26,7 +26,7 @@ interface MessageBalloonProps {
   role: "assistant" | "user";
   content: React.ReactNode;
   actions?: { type: string; feedbackResponse: string }[];
-  annotations?: Reference[];
+  references?: Reference[];
   isAnchor?: boolean;
   onSendMessage?: (msg: string) => void;
 }
@@ -36,15 +36,10 @@ export default function MessageBalloon({
   role,
   content,
   actions,
-  annotations,
+  references,
   isAnchor,
   onSendMessage,
 }: MessageBalloonProps) {
-  const parsedAnnotations: Reference[] =
-    annotations && typeof annotations === "string"
-      ? JSON.parse(annotations)
-      : [];
-
   const member = members[role];
 
   const className =
@@ -93,14 +88,14 @@ export default function MessageBalloon({
               );
             })}
           </div>
-          {parsedAnnotations &&
-            parsedAnnotations
-              .filter((item) => item.displayName)
-              .map((annotation, index) => {
+          {references &&
+            references
+              .filter((item) => item?.displayName)
+              .map((reference, index) => {
                 return (
                   <a
-                    href={annotation.downloadURL}
-                    download={annotation.displayName}
+                    href={reference?.downloadURL}
+                    download={reference?.displayName}
                     target="_blank"
                     rel="noreferrer"
                     className="downloadFile"
@@ -108,7 +103,7 @@ export default function MessageBalloon({
                     style={{ marginTop: isMobile ? 10 : 20 }}
                   >
                     {`[${index + 1}]. `}
-                    {annotation.displayName}
+                    {reference?.displayName}
                     <img
                       src={downloadIcon}
                       width={20}

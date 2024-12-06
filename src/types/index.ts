@@ -10,11 +10,11 @@ export type Message = {
   content: string;
   role: "assistant" | "user";
   conversationId: string;
-  annotations?: Reference[];
+  references?: Reference[];
 };
 
 export type Conversation = {
-  id: string;
+  _id: string;
   title: string;
   createdAt: string;
 };

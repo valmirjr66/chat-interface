@@ -11,7 +11,7 @@ type Message = {
   content: string | ReactElement;
   role: "assistant" | "user";
   conversationId: string;
-  annotations?: Reference[];
+  references?: Reference[];
 };
 
 interface MainFrameProps {
@@ -89,7 +89,7 @@ export default function MainFrame({
           isAnchor={messages.length === index + 1}
           id={message.id}
           onSendMessage={onSendMessage}
-          annotations={message.annotations}
+          references={message.references}
           key={message.id}
         />
       ))}

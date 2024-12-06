@@ -61,9 +61,9 @@ export default function History({
         reconnectionAttempts: Infinity,
       });
 
-      socketRef.current.on("newConversation", ({ id, title, createdAt }) => {
+      socketRef.current.on("newConversation", ({ _id, title, createdAt }) => {
         setHistory((prevState) => [
-          { id, title, createdAt, animatedTitle: getAnimatedTitle(title) },
+          { _id, title, createdAt, animatedTitle: getAnimatedTitle(title) },
           ...prevState,
         ]);
       });
@@ -80,7 +80,7 @@ export default function History({
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [history, setHistory] = useState<
     {
-      id: string;
+      _id: string;
       title: string;
       createdAt: string;
       animatedTitle: ReactElement;
@@ -100,7 +100,7 @@ export default function History({
         newConversation();
       }
 
-      setHistory((prevState) => prevState.filter((item) => item.id !== id));
+      setHistory((prevState) => prevState.filter((item) => item._id !== id));
     } catch {
       triggerToast();
     }
@@ -198,22 +198,22 @@ export default function History({
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
-                key={item.id}
+                key={item._id}
               >
                 <div
                   onClick={() => {
-                    setConversationId(item.id);
-                    localStorage.setItem("conversationId", item.id);
+                    setConversationId(item._id);
+                    localStorage.setItem("conversationId", item._id);
                   }}
                   style={{
                     marginTop: index === 0 ? 0 : 20,
-                    color: item.id === conversationId ? "#9CF609" : "#FFF",
+                    color: item._id === conversationId ? "#9CF609" : "#FFF",
                   }}
                   className="recentSearchWrapper"
                 >
                   <img
                     src={
-                      item.id === conversationId
+                      item._id === conversationId
                         ? greenChatBubble
                         : whiteChatBubble
                     }
@@ -229,7 +229,7 @@ export default function History({
                   alt="Remove"
                   className="closeIcon"
                   style={{ margin: "0px 10px", cursor: "pointer" }}
-                  onClick={() => removeHistoryItem(item.id)}
+                  onClick={() => removeHistoryItem(item._id)}
                 />
               </div>
             ))
