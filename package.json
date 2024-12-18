@@ -12,6 +12,7 @@
     "react": "^18.3.1",
     "react-device-detect": "^2.2.3",
     "react-dom": "^18.3.1",
+    "react-error-boundary": "^4.1.2",
     "react-font": "^1.2.1",
     "react-loading-skeleton": "^3.5.0",
     "react-markdown": "^9.0.1",
