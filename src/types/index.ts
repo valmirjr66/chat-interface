@@ -1,4 +1,5 @@
 export type Reference = {
+  _id: string;
   fileId: string;
   downloadURL: string;
   displayName: string;

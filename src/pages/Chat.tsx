@@ -93,28 +93,35 @@ export default function Chat() {
       );
 
       setMessages(data.messages);
-    } catch {
-      setMessages([]);
-      triggerToast(
-        "Something wen't wrong while fetching the messages, please try again 😟"
-      );
+    } catch (err) {
+      const typedError = err as { status: number };
+      // TODO: remove this gambiarra
+      if (typedError.status !== 404) {
+        setMessages([]);
+        triggerToast(
+          "Something wen't wrong while fetching the messages, please try again 😟"
+        );
+      }
     } finally {
       setIsLoadingMessages(false);
     }
   }, [conversationId, triggerToast]);
 
   useEffect(() => {
-    setMessages([]);
-
     if (conversationId) {
       fetchMessages();
     }
   }, [conversationId, fetchMessages]);
 
   useEffect(() => {
-    const element = document.getElementById("anchor");
-    element?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    // TODO: remove this gambiarra
+    setTimeout(() => {
+      const element = document.getElementById("list-of-messages");
+      if (element) {
+        element.scrollTop = element.scrollHeight;
+      }
+    }, 1000);
+  }, [conversationId]);
 
   const onSendMessage = async (message: string) => {
     const currentConversationId = conversationId ?? uuidv4();
@@ -130,9 +137,13 @@ export default function Chat() {
     ]);
 
     setWaitingAnswer(true);
+    setConversationId(currentConversationId);
 
     try {
-      socketRef.current?.send({ conversationId, content: message });
+      socketRef.current?.send({
+        conversationId: currentConversationId,
+        content: message,
+      });
     } catch {
       triggerToast(
         "Something wen't wrong while sending the message, please try again 😟"

@@ -2,9 +2,10 @@ import { isMobile } from "react-device-detect";
 import Skeleton from "react-loading-skeleton";
 import webIcon from "../imgs/web-icon.svg";
 import { Reference } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import httpCallers from "../service";
 import useToaster from "../hooks/useToaster";
+import { io, Socket } from "socket.io-client";
 
 interface ReferencesBoardProps {
   showReferences: boolean;
@@ -15,10 +16,12 @@ export default function ReferencesBoard({
   showReferences,
   conversationId,
 }: ReferencesBoardProps) {
-  const [references, setShowReferences] = useState<Reference[]>([]);
+  const [references, setReferences] = useState<Reference[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { triggerToast } = useToaster({ type: "error" });
+
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     const fetchReferences = async () => {
@@ -27,10 +30,10 @@ export default function ReferencesBoard({
           `assistant/conversations/${conversationId}/references`
         );
 
-        setShowReferences(data.references);
+        setReferences(data.references);
       } catch {
         triggerToast();
-        setShowReferences([]);
+        setReferences([]);
       } finally {
         setIsLoading(false);
       }
@@ -40,8 +43,29 @@ export default function ReferencesBoard({
       setIsLoading(true);
       fetchReferences();
     } else {
-      setShowReferences([]);
+      setReferences([]);
     }
+
+    if (!socketRef.current) {
+      socketRef.current = io(`${process.env.REACT_APP_WS_URL}`, {
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: Infinity,
+      });
+
+      socketRef.current.on("referenceSnapshot", (references: Reference[]) => {
+        console.log("chegou ref", references);
+        setReferences(references);
+      });
+    }
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
   }, [conversationId, triggerToast]);
 
   return (
@@ -82,9 +106,7 @@ export default function ReferencesBoard({
                 >
                   <img src={webIcon} alt="Reference link" width={20} />
                   <div className="referenceCardContent">
-                    <caption className="previewCaption">
-                      {item.displayName}
-                    </caption>
+                    <div className="previewCaption">{item.displayName}</div>
                     <img
                       src={item.previewImageURL}
                       width="100%"

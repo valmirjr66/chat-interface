@@ -76,23 +76,27 @@ export default function MainFrame({
 
   return (
     <ul
+      id="list-of-messages"
       className="messagesList"
       style={{
         fontSize: isMobile ? 14 : "unset",
         height: isMobile ? "70vh" : "60vh",
       }}
     >
-      {(isLoading ? loadingMessages : messages).map((message, index) => (
-        <MessageBalloon
-          content={message.content}
-          role={message.role}
-          isAnchor={messages.length === index + 1}
-          id={message.id}
-          onSendMessage={onSendMessage}
-          references={message.references}
-          key={message.id}
-        />
-      ))}
+      {(isLoading ? loadingMessages : messages).map(
+        (message, index) =>
+          message && (
+            <MessageBalloon
+              content={message.content}
+              role={message.role}
+              isAnchor={messages.length === index + 1}
+              id={message.id}
+              onSendMessage={onSendMessage}
+              references={message.references}
+              key={message.id}
+            />
+          )
+      )}
       {waitingAnswer && messages[messages.length - 1].role === "user" && (
         <MessageBalloon
           content={<LoadingDots />}

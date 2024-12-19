@@ -48,74 +48,71 @@ export default function MessageBalloon({
       : "messagesMessage";
 
   return (
-    <>
-      <li key={id} className={className}>
-        <img
-          className="avatar"
-          alt={member.clientData.username}
-          src={role === "user" ? myAvatar : aiAvatar}
-        />
+    <li key={id} className={className}>
+      <img
+        className="avatar"
+        alt={member.clientData.username}
+        src={role === "user" ? myAvatar : aiAvatar}
+      />
+      <div
+        className="messageContent"
+        style={{ marginBottom: isAnchor ? 30 : 0 }}
+      >
+        <div className="username">{member.clientData.username}</div>
         <div
-          className="messageContent"
-          style={{ marginBottom: isAnchor ? 30 : 0 }}
+          className="messageText"
+          style={{ maxWidth: isMobile ? "80%" : 400 }}
         >
-          <div className="username">{member.clientData.username}</div>
-          <div
-            className="messageText"
-            style={{ maxWidth: isMobile ? "80%" : 400 }}
-          >
-            {typeof content === "string" ? (
-              <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>
-            ) : (
-              content
-            )}
-          </div>
-          <div style={{ width: "100%" }}>
-            {actions?.map((action) => {
-              const className = {
-                positive: "primary",
-                negative: "cancel",
-              }[action.type];
+          {typeof content === "string" ? (
+            <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>
+          ) : (
+            content
+          )}
+        </div>
+        <div style={{ width: "100%" }}>
+          {actions?.map((action) => {
+            const className = {
+              positive: "primary",
+              negative: "cancel",
+            }[action.type];
 
+            return (
+              <button
+                className={className}
+                disabled={!isAnchor}
+                onClick={() => onSendMessage?.(action?.feedbackResponse)}
+              >
+                {action?.feedbackResponse}
+              </button>
+            );
+          })}
+        </div>
+        {references &&
+          references
+            .filter((item) => item?.displayName)
+            .map((reference, index) => {
               return (
-                <button
-                  className={className}
-                  disabled={!isAnchor}
-                  onClick={() => onSendMessage?.(action?.feedbackResponse)}
+                <a
+                  href={reference?.downloadURL}
+                  download={reference?.displayName}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="downloadFile"
+                  key={index}
+                  style={{ marginTop: isMobile ? 10 : 20 }}
                 >
-                  {action?.feedbackResponse}
-                </button>
+                  {`[${index + 1}]. `}
+                  {reference?.displayName}
+                  <img
+                    src={downloadIcon}
+                    width={20}
+                    alt="Download file"
+                    style={{ marginLeft: 6 }}
+                  />
+                </a>
               );
             })}
-          </div>
-          {references &&
-            references
-              .filter((item) => item?.displayName)
-              .map((reference, index) => {
-                return (
-                  <a
-                    href={reference?.downloadURL}
-                    download={reference?.displayName}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="downloadFile"
-                    key={index}
-                    style={{ marginTop: isMobile ? 10 : 20 }}
-                  >
-                    {`[${index + 1}]. `}
-                    {reference?.displayName}
-                    <img
-                      src={downloadIcon}
-                      width={20}
-                      alt="Download file"
-                      style={{ marginLeft: 6 }}
-                    />
-                  </a>
-                );
-              })}
-        </div>
-      </li>
-      {isAnchor && <div id="anchor" />}
-    </>
+      </div>
+    </li>
   );
 }
