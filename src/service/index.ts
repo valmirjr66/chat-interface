@@ -12,13 +12,13 @@ const httpCallers = {
   get: async (path: string) => {
     return await axiosInstance.get(path, defaultConfig);
   },
-  post: async <T>(path: string, data: T) => {
+  post: async <T>(path: string, data?: T) => {
     return await axiosInstance.post(path, data, defaultConfig);
   },
-  put: async <T>(path: string, data: T) => {
+  put: async <T>(path: string, data?: T) => {
     return await axiosInstance.put(path, data, defaultConfig);
   },
-  patch: async <T>(path: string, data: T) => {
+  patch: async <T>(path: string, data?: T) => {
     return await axiosInstance.patch(path, data, defaultConfig);
   },
   delete: async (path: string) => {

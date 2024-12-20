@@ -67,6 +67,23 @@ export default function History({
           ...prevState,
         ]);
       });
+
+      // TODO: this is not working still
+      socketRef.current.on("conversationMetadataUpdate", ({ _id, title }) => {
+        setHistory((prevState) => {
+          const updatedHistory = prevState.map((item) => {
+            return item._id === _id
+              ? {
+                  ...item,
+                  title,
+                  animatedTitle: getAnimatedTitle(title),
+                }
+              : item;
+          });
+
+          return updatedHistory;
+        });
+      });
     }
 
     return () => {
@@ -106,7 +123,7 @@ export default function History({
   }
 
   useEffect(() => {
-    const fetchConversationHistory = async () => {
+    const fetchHistory = async () => {
       try {
         const { data } = await httpCallers.get(`assistant/conversations`);
 
@@ -131,7 +148,7 @@ export default function History({
       }
     };
 
-    fetchConversationHistory();
+    fetchHistory();
   }, [getAnimatedTitle, triggerToast]);
 
   return (

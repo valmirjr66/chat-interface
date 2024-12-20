@@ -88,26 +88,29 @@ export default function Chat() {
     setIsLoadingMessages(true);
 
     try {
-      const { data } = await httpCallers.get(
-        `assistant/conversations/${conversationId}`
+      const { data: handshakeData } = await httpCallers.post(
+        `assistant/conversations/${conversationId}/handshake`
       );
 
-      setMessages(data.messages);
-    } catch (err) {
-      const typedError = err as { status: number };
-      // TODO: remove this gambiarra
-      if (typedError.status !== 404) {
-        setMessages([]);
-        triggerToast(
-          "Something wen't wrong while fetching the messages, please try again 😟"
+      if (handshakeData.status === "active") {
+        const { data } = await httpCallers.get(
+          `assistant/conversations/${conversationId}`
         );
+
+        setMessages(data.messages);
       }
+    } catch {
+      triggerToast(
+        "Something wen't wrong while fetching the messages, please try again 😟"
+      );
     } finally {
       setIsLoadingMessages(false);
     }
   }, [conversationId, triggerToast]);
 
   useEffect(() => {
+    setMessages([]);
+
     if (conversationId) {
       fetchMessages();
     }
@@ -119,7 +122,23 @@ export default function Chat() {
   }, [messages]);
 
   const onSendMessage = async (message: string) => {
-    const currentConversationId = conversationId ?? uuidv4();
+    let currentConversationId = conversationId;
+
+    if (!currentConversationId) {
+      currentConversationId = uuidv4();
+
+      const { data: handshakeData } = await httpCallers.post(
+        `assistant/conversations/${currentConversationId}/handshake`
+      );
+
+      if (handshakeData.status !== "created") {
+        triggerToast(
+          "Something wen't wrong while sending the message, please try again 😟"
+        );
+      } else {
+        setConversationId(currentConversationId);
+      }
+    }
 
     setMessages((prevState) => [
       ...prevState,
@@ -127,12 +146,11 @@ export default function Chat() {
         id: "temp_id",
         content: message,
         role: "user",
-        conversationId: currentConversationId,
+        conversationId: currentConversationId!,
       },
     ]);
 
     setWaitingAnswer(true);
-    setConversationId(currentConversationId);
 
     try {
       socketRef.current?.send({

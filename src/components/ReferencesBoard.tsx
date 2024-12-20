@@ -1,11 +1,11 @@
+import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Skeleton from "react-loading-skeleton";
-import webIcon from "../imgs/web-icon.svg";
-import { Reference } from "../types";
-import { useEffect, useRef, useState } from "react";
-import httpCallers from "../service";
-import useToaster from "../hooks/useToaster";
 import { io, Socket } from "socket.io-client";
+import useToaster from "../hooks/useToaster";
+import webIcon from "../imgs/web-icon.svg";
+import httpCallers from "../service";
+import { Reference } from "../types";
 
 interface ReferencesBoardProps {
   showReferences: boolean;
