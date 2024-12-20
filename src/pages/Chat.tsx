@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
-import History from "../components/History";
+import SidePanel from "../components/SidePanel";
 import Input from "../components/Input";
 import MainFrame from "../components/MainFrame";
 import ReferencesBoard from "../components/ReferencesBoard";
@@ -13,6 +13,7 @@ import menuHamburger from "../imgs/Hamburger_icon.svg";
 import logoTextUpperNavbar from "../imgs/logo-text-upper-navbar.svg";
 import httpCallers from "../service";
 import { Message } from "../types";
+import { TypeAnimation } from "react-type-animation";
 
 export default function Chat() {
   const socketRef = useRef<Socket | null>(null);
@@ -122,31 +123,13 @@ export default function Chat() {
   }, [messages]);
 
   const onSendMessage = async (message: string) => {
-    let currentConversationId = conversationId;
-
-    if (!currentConversationId) {
-      currentConversationId = uuidv4();
-
-      const { data: handshakeData } = await httpCallers.post(
-        `assistant/conversations/${currentConversationId}/handshake`
-      );
-
-      if (handshakeData.status !== "created") {
-        triggerToast(
-          "Something wen't wrong while sending the message, please try again 😟"
-        );
-      } else {
-        setConversationId(currentConversationId);
-      }
-    }
-
     setMessages((prevState) => [
       ...prevState,
       {
         id: "temp_id",
         content: message,
         role: "user",
-        conversationId: currentConversationId!,
+        conversationId: conversationId!,
       },
     ]);
 
@@ -154,7 +137,7 @@ export default function Chat() {
 
     try {
       socketRef.current?.send({
-        conversationId: currentConversationId,
+        conversationId: conversationId!,
         content: message,
       });
     } catch {
@@ -165,7 +148,13 @@ export default function Chat() {
   };
 
   const newConversation = () => {
-    setConversationId(null);
+    const newConversationId = uuidv4();
+
+    socketRef.current?.emit("conversationHandshake", {
+      conversationId: newConversationId,
+    });
+
+    setConversationId(newConversationId);
   };
 
   return (
@@ -194,8 +183,8 @@ export default function Chat() {
         />
       </header>
       <div className="appWrapper">
-        <History
-          showMenu={showMenu}
+        <SidePanel
+          show={showMenu}
           conversationId={conversationId}
           setConversationId={setConversationId}
           newConversation={newConversation}
@@ -209,25 +198,64 @@ export default function Chat() {
               justifyContent: "space-between",
             }}
           >
-            <div className="appInner">
-              <MainFrame
-                isLoading={isLoadingMessages}
-                messages={messages?.length === 0 ? [] : messages}
-                waitingAnswer={waitingAnswer}
-                onSendMessage={onSendMessage}
-              />
-              <ReferencesBoard
-                showReferences={showReferences}
-                conversationId={conversationId}
-              />
-            </div>
-            <Input
-              onSendMessage={onSendMessage}
-              waitingAnswer={waitingAnswer}
-              toggleReferences={() =>
-                setShowReferences((prevState) => !prevState)
-              }
-            />
+            {conversationId ? (
+              <>
+                <div className="appInner">
+                  <MainFrame
+                    isLoading={isLoadingMessages}
+                    messages={messages?.length === 0 ? [] : messages}
+                    waitingAnswer={waitingAnswer}
+                    onSendMessage={onSendMessage}
+                  />
+                  <ReferencesBoard
+                    showReferences={showReferences}
+                    conversationId={conversationId}
+                  />
+                </div>
+                <Input
+                  onSendMessage={onSendMessage}
+                  waitingAnswer={waitingAnswer}
+                  toggleReferences={() =>
+                    setShowReferences((prevState) => !prevState)
+                  }
+                />
+              </>
+            ) : (
+              <div className="appInner">
+                <div
+                  style={{
+                    backgroundColor: "#3a3a3a",
+                    width: "100%",
+                    height: isMobile ? "70vh" : "60vh",
+                    borderRadius: 10,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "1px solid rgba(255, 255, 255, 0.5)",
+                    color: "white",
+                    fontSize: 24,
+                    flexDirection: "column",
+                  }}
+                >
+                  <h3>Welcome back!</h3>
+                  <p>
+                    <TypeAnimation
+                      sequence={[
+                        "I'm here to help you manage internal knowledge",
+                        5000,
+                        "I'm here to help you create and co-create",
+                        5000,
+                        "I'm here to help you find organizational info",
+                        5000,
+                      ]}
+                      speed={70}
+                      wrapper="span"
+                      repeat={Infinity}
+                    />
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </section>
       </div>
