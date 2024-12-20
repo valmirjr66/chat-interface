@@ -114,14 +114,9 @@ export default function Chat() {
   }, [conversationId, fetchMessages]);
 
   useEffect(() => {
-    // TODO: remove this gambiarra
-    setTimeout(() => {
-      const element = document.getElementById("list-of-messages");
-      if (element) {
-        element.scrollTop = element.scrollHeight;
-      }
-    }, 1000);
-  }, [conversationId]);
+    const element = document.getElementById("anchor");
+    element?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const onSendMessage = async (message: string) => {
     const currentConversationId = conversationId ?? uuidv4();

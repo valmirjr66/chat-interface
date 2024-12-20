@@ -90,10 +90,9 @@ export default function MainFrame({
               content={message.content}
               role={message.role}
               isAnchor={messages.length === index + 1}
-              id={message.id}
+              key={message.id}
               onSendMessage={onSendMessage}
               references={message.references}
-              key={message.id}
             />
           )
       )}
@@ -102,9 +101,8 @@ export default function MainFrame({
           content={<LoadingDots />}
           role="assistant"
           isAnchor
-          id="loading_msg"
+          key={`loading_msg_${uuidv4()}`}
           onSendMessage={onSendMessage}
-          key={uuidv4()}
         />
       )}
     </ul>

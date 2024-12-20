@@ -54,10 +54,20 @@ export default function ReferencesBoard({
         reconnectionAttempts: Infinity,
       });
 
-      socketRef.current.on("referenceSnapshot", (references: Reference[]) => {
-        console.log("chegou ref", references);
-        setReferences(references);
-      });
+      socketRef.current.on(
+        "referencesSnapshot",
+        ({
+          conversationId: incomingConversationId,
+          references: incomingReferences,
+        }: {
+          conversationId: string;
+          references: Reference[];
+        }) => {
+          if (incomingConversationId === conversationId) {
+            setReferences(incomingReferences);
+          }
+        }
+      );
     }
 
     return () => {
