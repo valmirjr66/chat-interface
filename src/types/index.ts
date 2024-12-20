@@ -18,4 +18,5 @@ export type Conversation = {
   _id: string;
   title: string;
   createdAt: string;
+  status: 'created' | 'active' | 'archived';
 };

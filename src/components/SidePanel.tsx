@@ -11,19 +11,19 @@ import eyesAdd from "../imgs/ic-eyes-add.svg";
 import httpCallers from "../service";
 import { Conversation } from "../types";
 
-interface HistoryProps {
-  showMenu: boolean;
+interface SidePanelProps {
+  show: boolean;
   conversationId: string | null;
   newConversation: () => void;
   setConversationId: (conversationId: string) => void;
 }
 
-export default function History({
-  showMenu,
+export default function SidePanel({
+  show,
   newConversation,
   conversationId,
   setConversationId,
-}: HistoryProps) {
+}: SidePanelProps) {
   function createTypeAnimationSequence(input: string) {
     const words = input.split(" ");
     const result = [];
@@ -50,6 +50,18 @@ export default function History({
     []
   );
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [history, setHistory] = useState<
+    {
+      _id: string;
+      title: string;
+      createdAt: string;
+      status: string;
+      animatedTitle: ReactElement;
+    }[]
+  >([]);
+  console.log(history);
+
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -61,21 +73,31 @@ export default function History({
         reconnectionAttempts: Infinity,
       });
 
-      socketRef.current.on("newConversation", ({ _id, title, createdAt }) => {
+      socketRef.current.on("newConversation", (payload) => {
+        const { _id, title, createdAt, status } = payload;
+
         setHistory((prevState) => [
-          { _id, title, createdAt, animatedTitle: getAnimatedTitle(title) },
+          {
+            _id,
+            title,
+            createdAt,
+            animatedTitle: getAnimatedTitle(title),
+            status,
+          },
           ...prevState,
         ]);
       });
 
-      // TODO: this is not working still
-      socketRef.current.on("conversationMetadataUpdate", ({ _id, title }) => {
+      socketRef.current.on("conversationMetadataUpdate", (payload) => {
+        const { _id, title, status } = payload;
+
         setHistory((prevState) => {
           const updatedHistory = prevState.map((item) => {
             return item._id === _id
               ? {
                   ...item,
                   title,
+                  status,
                   animatedTitle: getAnimatedTitle(title),
                 }
               : item;
@@ -93,16 +115,6 @@ export default function History({
       }
     };
   }, [getAnimatedTitle]);
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [history, setHistory] = useState<
-    {
-      _id: string;
-      title: string;
-      createdAt: string;
-      animatedTitle: ReactElement;
-    }[]
-  >([]);
 
   const { triggerToast } = useToaster({ type: "error" });
 
@@ -155,7 +167,7 @@ export default function History({
     <nav
       className="appNav"
       style={{
-        display: isMobile && !showMenu ? "none" : "block",
+        display: isMobile && !show ? "none" : "block",
         position: isMobile ? "fixed" : "relative",
       }}
     >
@@ -216,12 +228,11 @@ export default function History({
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
-                key={item._id}
+                key={`${item.status}-${item._id}`}
               >
                 <div
                   onClick={() => {
                     setConversationId(item._id);
-                    localStorage.setItem("conversationId", item._id);
                   }}
                   style={{
                     marginTop: index === 0 ? 0 : 20,

@@ -32,8 +32,11 @@ export default function ReferencesBoard({
 
         setReferences(data.references);
       } catch {
-        triggerToast();
         setReferences([]);
+
+        // TODO: Remove this gambiarra
+        // Let's try again in a sec :p
+        setTimeout(fetchReferences, 1000);
       } finally {
         setIsLoading(false);
       }
