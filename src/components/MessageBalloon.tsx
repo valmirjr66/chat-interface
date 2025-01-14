@@ -61,7 +61,7 @@ const MessageBalloon: React.FC<MessageBalloonProps> = ({
           <div className="username">{member.clientData.username}</div>
           <div
             className="messageText"
-            style={{ maxWidth: isMobile ? "80%" : 400 }}
+            style={{ maxWidth: isMobile || role === "assistant" ? "70%" : 400 }}
           >
             {typeof content === "string" ? (
               <Markdown rehypePlugins={[rehypeRaw]}>{content}</Markdown>
